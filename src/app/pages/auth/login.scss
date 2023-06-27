@@ -1,0 +1,83 @@
+$font-family: 'arial';
+* {
+    box-sizing: border-box;
+}
+// Assigment section
+.assignment {
+    width: 43%;
+    height: 100vh;
+    float: left;
+    display: flex;
+    align-items: center;
+    background: url('../../assets/img/login_background.jpeg') -330px -130px;
+}
+
+.assignment p{
+    color: white;
+    margin-top: 45px;
+    margin-left: 30px;
+    font-size: 30px;
+    font-family: $font-family;
+}
+//Assignment section END
+//*
+//Login Form section
+//Heading Section
+.login-form-header{
+    width: 57%;
+    height: 30vh;
+    float: left;
+    padding-top: 8%;
+    text-align: center;
+    line-height: 15px;
+    
+}
+.login-form-header h3{
+    color: #404255;
+    font-size: 35px;
+}
+.login-form-header p{
+    color: #b7b7c5;
+    font-size: 19px;
+}
+//Login Form Container
+.login-form-container{
+    width: 57%;
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+//Login Notification 
+.login-notify{
+    width: 54%;
+    height: 12vh;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    background: #eee4ff;
+}
+.login-form{
+    float: left;
+    width: 54%;
+    height: 40vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.form-control{
+    text-indent: 0.6rem;
+    height: 60px;
+    font-family: $font-family !important;
+}
+.login-form Form Button{
+    height: 45px;
+    width: 100px;
+    border-radius: 4px;
+    font-size: 17px;
+    font-family: $font-family;
+    padding: 0px;
+    margin-top: 25px;
+    border: none;
+    background-color: #3699fe;
+}

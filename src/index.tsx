@@ -7,6 +7,7 @@ import reportWebVitals from "./reportWebVitals";
 import * as axiosInitializer from "./app/redux/axios";
 import axios from "axios";
 import "./index.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { BrowserRouter } from "react-router-dom";
 
