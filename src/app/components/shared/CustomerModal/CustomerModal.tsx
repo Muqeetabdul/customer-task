@@ -1,6 +1,7 @@
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "./CustomerModal.scss";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function CustomerModal(props: any) {
   return (
@@ -19,19 +20,26 @@ function CustomerModal(props: any) {
         <Modal.Body className="modal-style">
           <form className="form-group needs-validation" noValidate>
             <div className="form-container">
-              <div className="grid-item">
-                <label>Enter First Name</label>
+              <div className="grid-item was-validated">
+                <label htmlFor="firstname">Enter First Name</label>
                 <input
                   placeholder="First Name"
                   type="text"
                   className="form-control"
+                  id="firstname"
                   required
                 ></input>
-                <p>
+                <div className="valid-feedback">
+                    Firstname is required
+                </div>
+                <div className="invalid-feedback">
+                    Firstname entered correct
+                </div>
+                {/* <p>
                   Please Enter <b>First Name</b>
-                </p>
+                </p> */}
               </div>
-              <div className="grid-item">
+              <div className="grid-item was-validated">
                 <label>Enter Last Name</label>
                 <input
                   placeholder="Last Name"
@@ -39,11 +47,17 @@ function CustomerModal(props: any) {
                   className="form-control"
                   required
                 ></input>
-                <p>
+                <div className="valid-feedback">
+                    Lastname is required
+                </div>
+                <div className="invalid-feedback">
+                    Lastname entered correct
+                </div>
+                {/* <p>
                   Please Enter <b>Last Name</b>
-                </p>
+                </p> */}
               </div>
-              <div className="grid-item">
+              <div className="grid-item was-validated">
                 <label>Enter Login</label>
                 <input
                   placeholder="Login"
@@ -51,11 +65,17 @@ function CustomerModal(props: any) {
                   className="form-control"
                   required
                 ></input>
-                <p>
+                <div className="valid-feedback">
+                    Login is required
+                </div>
+                <div className="invalid-feedback">
+                    Login is entered correct
+                </div>
+                {/* <p>
                   Please Enter <b>Login</b>
-                </p>
+                </p> */}
               </div>
-              <div className="grid-item">
+              <div className="grid-item was-validated">
                 <label>Enter Email</label>
                 <input
                   placeholder="Email"
@@ -63,18 +83,24 @@ function CustomerModal(props: any) {
                   className="form-control"
                   required
                 ></input>
-                <p>
+                <div className="valid-feedback">
+                    Email is required
+                </div>
+                <div className="invalid-feedback">
+                    Email is entered correct
+                </div>
+                {/* <p>
                   Please Enter <b>Email</b>
-                </p>
+                </p> */}
               </div>
-              <div className="grid-item">
+              <div className="grid-item was-validated">
                 <label>Date of Birth</label>
                 <input type="text" className="form-control" required></input>
                 <p>
                   Please Enter <b>Date of Birth</b> in 'mm/dd/yyyy' format
                 </p>
               </div>
-              <div className="grid-item">
+              <div className="grid-item was-validated">
                 <label>Enter IP Address</label>
                 <input
                   placeholder="IP Address"

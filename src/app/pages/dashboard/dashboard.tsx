@@ -11,6 +11,10 @@ import { PaginationControl } from "react-bootstrap-pagination-control";
 import { current } from "@reduxjs/toolkit";
 import CustomerModal from "../../components/shared/CustomerModal/CustomerModal";
 import DeleteCustomer from "../../components/shared/DeleteCustomer";
+import { customers } from '../../redux/_mocks_/mockData/customerTableMock';
+
+//Temporarily sliced customers array to fit 3 records
+const selected_customer = customers.slice(0, 3);
 
 const Dashboard = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -124,19 +128,26 @@ const Dashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
+                    { selected_customer.map((data, index) => (
+                    <tr key={index}>
                       <td>
                         <input type={"checkbox"}></input>
                       </td>
-                      <td>1</td>
-                      <td>Sonni</td>
-                      <td>Gabotti</td>
-                      <td>sgabotti@wsj.com</td>
-                      <td>Female</td>
+                      <td>{data.id}</td>
+                      <td>{data.firstName}</td>
+                      <td>{data.lastName}</td>
+                      <td>{data.email}</td>
+                      <td>{data.gender}</td>
                       <td>
-                        <button className="status-suspended">Suspended</button>
+                        { 
+                          data.status  ? 
+                          <button className="status-suspended">Suspended</button> 
+                          : 
+                          <button className="status-active">Active</button> 
+                        }
+                        
                       </td>
-                      <td>Indiviual</td>
+                      <td>{data.type ? "Indiviual" : "Business"}</td>
                       <td>
                         <div className="icon">
                           <div className="icon-style">
@@ -162,78 +173,7 @@ const Dashboard = () => {
                         </div>
                       </td>
                     </tr>
-                    <tr>
-                      <td>
-                        <input type="checkbox"></input>
-                      </td>
-                      <td>2</td>
-                      <td>Abie</td>
-                      <td>Cowperthwaite</td>
-                      <td>acowperthwaitel@storify.com</td>
-                      <td>Male</td>
-                      <td>
-                        <button className="status-active">Active</button>
-                      </td>
-                      <td>Indiviual</td>
-                      <td>
-                        <div className="icon">
-                          <div className="icon-style">
-                            <BiEdit
-                              style={{
-                                color: "#3699fe",
-                                width: "25px",
-                                height: "25px",
-                              }}
-                            />
-                          </div>
-                          <div className="icon-style">
-                            <MdDeleteOutline
-                              style={{
-                                color: "#f55465",
-                                width: "25px",
-                                height: "25px",
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <input type="checkbox"></input>
-                      </td>
-                      <td>3</td>
-                      <td>Melody</td>
-                      <td>Stodd</td>
-                      <td>mstodd2@twitpic.com</td>
-                      <td>Female</td>
-                      <td>
-                        <button className="status-suspended">Suspended</button>
-                      </td>
-                      <td>Indiviual</td>
-                      <td>
-                        <div className="icon">
-                          <div className="icon-style">
-                            <BiEdit
-                              style={{
-                                color: "#3699fe",
-                                width: "25px",
-                                height: "25px",
-                              }}
-                            />
-                          </div>
-                          <div className="icon-style">
-                            <MdDeleteOutline
-                              style={{
-                                color: "#f55465",
-                                width: "25px",
-                                height: "25px",
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
+                    )) }
                   </tbody>
                 </Table>
               </div>
@@ -242,9 +182,9 @@ const Dashboard = () => {
               <div className="pagination">
                 <PaginationControl
                   page={page}
-                  between={4}
-                  total={250}
-                  limit={20}
+                  between={9}
+                  total={8}
+                  limit={1}
                   changePage={(page) => {
                     setPage(page);
                     console.log(page);

@@ -2,19 +2,18 @@ import React from "react";
 import { UseFormRegister, FieldValues } from "react-hook-form";
 
 export interface TextInputProps {
-  type: "text" | "password" | undefined;
+  type: "email" | "password" | undefined;
   name: string;
   register: UseFormRegister<FieldValues> | any;
   errorMessage?: string | undefined | any;
-  label: string;
+  label?: string;
+  placeholder?: string;
 }
 
-const TextInput = ({ type, name, register, errorMessage, label }: TextInputProps) => {
+const TextInput = ({ type, name, register, errorMessage, label, placeholder }: TextInputProps) => {
   return (
     <>
-      <label>{label}</label>
-      <br></br>
-      <input type={type} {...register(name)} />
+      <input placeholder={placeholder} type={type} {...register(name)} />
       {errorMessage && <div>{errorMessage}</div>}
     </>
   );
