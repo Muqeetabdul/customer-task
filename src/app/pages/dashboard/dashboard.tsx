@@ -13,12 +13,15 @@ import CustomerModal from "../../components/shared/CustomerModal/CustomerModal";
 import DeleteCustomer from "../../components/shared/DeleteCustomer";
 import { customers } from '../../redux/_mocks_/mockData/customerTableMock';
 
-//Temporarily sliced customers array to fit 3 records
-const selected_customer = customers.slice(0, 3);
-
 const Dashboard = () => {
   const dispatch: AppDispatch = useDispatch();
   const [page, setPage] = useState(1);
+  const recordsPerPage = 3;
+  const totalCustomers = customers.length;
+  const totalPages = 8;
+  const firstIndex = (page - 1) * recordsPerPage;
+  const lastIndex = page * recordsPerPage;
+  const selected_customer = customers.slice(firstIndex, lastIndex);
   const [isShow, setIsShow] = useState(false);
   const { user } = useSelector((state: any) => state.auth);
   const [showDelete, setShowDelete] = useState(false);
@@ -35,6 +38,9 @@ const Dashboard = () => {
   const handleUpdate = () => {
     setShowUpdate((current) => !current);
   };
+  const changePage = (newPage: any) => {
+    setPage(newPage);
+  }
   return (
     <>
       <div className="container">
@@ -182,14 +188,10 @@ const Dashboard = () => {
               <div className="pagination">
                 <PaginationControl
                   page={page}
-                  between={9}
-                  total={8}
+                  total={totalPages}
                   limit={1}
-                  changePage={(page) => {
-                    setPage(page);
-                    console.log(page);
-                  }}
-                  ellipsis={1}
+                  changePage={changePage}
+                  ellipsis={4}
                 />
               </div>
               <div className="showing-rows">
