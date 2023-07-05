@@ -8,12 +8,14 @@
   grid-template-columns: auto auto auto;
   column-gap: 25px;
 }
-.grid-item > input::placeholder {
-  color: #b5b5c3;
-}
-.grid-item > label {
-  color: #434558;
-  font-size: 18px;
+.grid-item {
+  > input::placeholder {
+    color: #b5b5c3;
+  }
+  > label {
+    color: #434558;
+    font-size: 18px;
+  }
 }
 .form-control {
   height: 45px;
@@ -27,6 +29,13 @@
   z-index: 10040;
   overflow: auto;
   overflow-y: auto;
+}
+.modal-footer > button{
+  background-color: #3699fe;
+  border: none;
+  height: 50px;
+  width: 70px;
+  font-size: 18px;
 }
 
 //Modal responsive section

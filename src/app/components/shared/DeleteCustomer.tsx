@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function DeleteCustomer(props: any) {
   return (
@@ -18,7 +19,12 @@ function DeleteCustomer(props: any) {
           >
             Cancel
           </Button>
-          <Button variant="danger" type="submit" onClick={props.onHide}>
+          <Button 
+            variant="danger" 
+            type="submit" 
+            onClick={props.onHide}
+            className='btn btn-danger'
+            >
             Delete
           </Button>
         </Modal.Footer>

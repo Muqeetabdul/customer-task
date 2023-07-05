@@ -48,7 +48,7 @@ const LoginPage = () => {
                 type={"email"}
                 register={register}
                 placeholder='Enter E-mail'
-                errorMessage={errors["email"]?.message}
+                errorMessage={errors.email?.message}
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword">

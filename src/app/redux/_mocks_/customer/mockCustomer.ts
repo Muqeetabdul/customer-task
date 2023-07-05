@@ -54,6 +54,7 @@ export default function mockCustomer(mock: MockAdapter) {
   });
 
   mock.onGet(/api\/customers\/\d+/).reply((config) => {
+    console.log("I am in GET Method API")
     if (config?.url) {
       const id = config.url.match(/api\/customers\/(\d+)/)![1];
       const customer = customers.find((el) => el.id === +id);
@@ -90,7 +91,6 @@ export default function mockCustomer(mock: MockAdapter) {
       if (index < 0) {
         return [400];
       }
-
       return [200];
     } else {
       return [500, { error: "An unknown error occured" }];

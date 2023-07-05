@@ -12,12 +12,12 @@ import { current } from "@reduxjs/toolkit";
 import CustomerModal from "../../components/shared/CustomerModal/CustomerModal";
 import DeleteCustomer from "../../components/shared/DeleteCustomer";
 import { customers } from '../../redux/_mocks_/mockData/customerTableMock';
+import axios from "axios";
 
 const Dashboard = () => {
   const dispatch: AppDispatch = useDispatch();
   const [page, setPage] = useState(1);
   const recordsPerPage = 3;
-  const totalCustomers = customers.length;
   const totalPages = 8;
   const firstIndex = (page - 1) * recordsPerPage;
   const lastIndex = page * recordsPerPage;
@@ -26,17 +26,27 @@ const Dashboard = () => {
   const { user } = useSelector((state: any) => state.auth);
   const [showDelete, setShowDelete] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+
   const logout = () => {
     dispatch(authActions.logout());
   };
   const newCustomer = () => {
     setIsShow((current) => !current);
-  };
-  const handleDelete = () => {
+    setModalTitle("New Customer");
+  }
+  const handleDelete = (id: number) => {
     setShowDelete((current) => !current);
+    axios
+  .delete(`api/customers/${id}`)
+  .then((response) => {
+    console.log("DELETED");
+  });
   };
-  const handleUpdate = () => {
+  const handleUpdate = (id:number, fname: string, lname: string) => {
     setShowUpdate((current) => !current);
+    setModalTitle(`Update Customer "${fname} ${lname}"`);
+    console.log(id);
   };
   const changePage = (newPage: any) => {
     setPage(newPage);
@@ -158,7 +168,7 @@ const Dashboard = () => {
                         <div className="icon">
                           <div className="icon-style">
                             <BiEdit
-                              onClick={handleUpdate}
+                              onClick={() => handleUpdate(data.id, data.firstName, data.lastName)}
                               style={{
                                 color: "#3699fe",
                                 width: "25px",
@@ -168,7 +178,7 @@ const Dashboard = () => {
                           </div>
                           <div className="icon-style">
                             <MdDeleteOutline
-                              onClick={handleDelete}
+                              onClick={() => handleDelete(data.id)}
                               style={{
                                 color: "#f55465",
                                 width: "25px",
@@ -214,13 +224,17 @@ const Dashboard = () => {
         </div>
       </div>
       {isShow && (
-        <CustomerModal show={isShow} onHide={() => setIsShow(false)} />
+        <CustomerModal 
+          show={isShow} 
+          modaltitle={modalTitle} 
+          onHide={() => setIsShow(false)} 
+        />
       )}
       {showDelete && (
         <DeleteCustomer show={showDelete} onHide={() => setShowDelete(false)} />
       )}
       {showUpdate && (
-        <CustomerModal show={showUpdate} onHide={() => setShowUpdate(false)} />
+        <CustomerModal show={showUpdate} onHide={() => setShowUpdate(false)} modaltitle={modalTitle} />
       )}
     </>
   );
