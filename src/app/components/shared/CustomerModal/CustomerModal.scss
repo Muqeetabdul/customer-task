@@ -30,14 +30,6 @@
   overflow: auto;
   overflow-y: auto;
 }
-.modal-footer > button{
-  background-color: #3699fe;
-  border: none;
-  height: 50px;
-  width: 70px;
-  font-size: 18px;
-}
-
 //Modal responsive section
 @media all and (max-width: 600px){
   .form-container {
@@ -116,7 +108,7 @@
   .modal-footer > button {
     height: 50px !important;
     width: 70px !important;
-    font-size: 18px !important;
+    font-size: 16px !important;
   }
 }
 @media all and (min-width: 992px) {

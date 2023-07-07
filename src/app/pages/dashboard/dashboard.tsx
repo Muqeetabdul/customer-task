@@ -11,7 +11,7 @@ import { PaginationControl } from "react-bootstrap-pagination-control";
 import { current } from "@reduxjs/toolkit";
 import CustomerModal from "../../components/shared/CustomerModal/CustomerModal";
 import DeleteCustomer from "../../components/shared/DeleteCustomer";
-import { customers } from '../../redux/_mocks_/mockData/customerTableMock';
+import { customers } from "../../redux/_mocks_/mockData/customerTableMock";
 import axios from "axios";
 
 const Dashboard = () => {
@@ -27,6 +27,9 @@ const Dashboard = () => {
   const [showDelete, setShowDelete] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
+  const [modalButton, setModalButton] = useState("");
+  const [deleteId, setDeleteId] = useState(0);
+  const [updateId, setUpdateId] = useState(0);
 
   const logout = () => {
     dispatch(authActions.logout());
@@ -34,23 +37,21 @@ const Dashboard = () => {
   const newCustomer = () => {
     setIsShow((current) => !current);
     setModalTitle("New Customer");
-  }
+    setModalButton("Save");
+  };
   const handleDelete = (id: number) => {
     setShowDelete((current) => !current);
-    axios
-  .delete(`api/customers/${id}`)
-  .then((response) => {
-    console.log("DELETED");
-  });
+    setDeleteId(id);
   };
-  const handleUpdate = (id:number, fname: string, lname: string) => {
+  const handleUpdate = (id: number, fname: string, lname: string) => {
     setShowUpdate((current) => !current);
     setModalTitle(`Update Customer "${fname} ${lname}"`);
-    console.log(id);
+    setModalButton("Update");
+    setUpdateId(id);
   };
   const changePage = (newPage: any) => {
     setPage(newPage);
-  }
+  };
   return (
     <>
       <div className="container">
@@ -144,52 +145,58 @@ const Dashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    { selected_customer.map((data, index) => (
-                    <tr key={index}>
-                      <td>
-                        <input type={"checkbox"}></input>
-                      </td>
-                      <td>{data.id}</td>
-                      <td>{data.firstName}</td>
-                      <td>{data.lastName}</td>
-                      <td>{data.email}</td>
-                      <td>{data.gender}</td>
-                      <td>
-                        { 
-                          data.status  ? 
-                          <button className="status-suspended">Suspended</button> 
-                          : 
-                          <button className="status-active">Active</button> 
-                        }
-                        
-                      </td>
-                      <td>{data.type ? "Indiviual" : "Business"}</td>
-                      <td>
-                        <div className="icon">
-                          <div className="icon-style">
-                            <BiEdit
-                              onClick={() => handleUpdate(data.id, data.firstName, data.lastName)}
-                              style={{
-                                color: "#3699fe",
-                                width: "25px",
-                                height: "25px",
-                              }}
-                            />
+                    {selected_customer.map((data, index) => (
+                      <tr key={index}>
+                        <td>
+                          <input type={"checkbox"}></input>
+                        </td>
+                        <td>{data.id}</td>
+                        <td>{data.firstName}</td>
+                        <td>{data.lastName}</td>
+                        <td>{data.email}</td>
+                        <td>{data.gender}</td>
+                        <td>
+                          {data.status ? (
+                            <button className="status-suspended">
+                              Suspended
+                            </button>
+                          ) : (
+                            <button className="status-active">Active</button>
+                          )}
+                        </td>
+                        <td>{data.type == 0 ? "Indiviual" : "Business"}</td>
+                        <td>
+                          <div className="icon">
+                            <div className="icon-style">
+                              <BiEdit
+                                onClick={() =>
+                                  handleUpdate(
+                                    data.id,
+                                    data.firstName,
+                                    data.lastName
+                                  )
+                                }
+                                style={{
+                                  color: "#3699fe",
+                                  width: "25px",
+                                  height: "25px",
+                                }}
+                              />
+                            </div>
+                            <div className="icon-style">
+                              <MdDeleteOutline
+                                onClick={() => handleDelete(data.id)}
+                                style={{
+                                  color: "#f55465",
+                                  width: "25px",
+                                  height: "25px",
+                                }}
+                              />
+                            </div>
                           </div>
-                          <div className="icon-style">
-                            <MdDeleteOutline
-                              onClick={() => handleDelete(data.id)}
-                              style={{
-                                color: "#f55465",
-                                width: "25px",
-                                height: "25px",
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    )) }
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </Table>
               </div>
@@ -206,6 +213,7 @@ const Dashboard = () => {
               </div>
               <div className="showing-rows">
                 <select
+                  defaultValue={"1"}
                   className="form-select"
                   style={{
                     backgroundColor: "#f4f6f9",
@@ -215,7 +223,7 @@ const Dashboard = () => {
                 >
                   <option>1</option>
                   <option>2</option>
-                  <option selected>3</option>
+                  <option>3</option>
                 </select>
                 <p>Showing rows 1 to 3 of 100</p>
               </div>
@@ -223,18 +231,34 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      {/* To Call Modal - To add new customer */}
       {isShow && (
-        <CustomerModal 
-          show={isShow} 
-          modaltitle={modalTitle} 
-          onHide={() => setIsShow(false)} 
+        <CustomerModal
+          show={isShow}
+          setshow={setIsShow}
+          modaltitle={modalTitle}
+          onHide={() => setIsShow(false)}
+          modalbutton={modalButton}
         />
       )}
+      {/* To call Delete Modal */}
       {showDelete && (
-        <DeleteCustomer show={showDelete} onHide={() => setShowDelete(false)} />
+        <DeleteCustomer
+          show={showDelete}
+          setShowDelete={setShowDelete}
+          deleteid={deleteId}
+          onHide={() => setShowDelete(false)}
+        />
       )}
+      {/* To call Update Modal */}
       {showUpdate && (
-        <CustomerModal show={showUpdate} onHide={() => setShowUpdate(false)} modaltitle={modalTitle} />
+        <CustomerModal
+          show={showUpdate}
+          onHide={() => setShowUpdate(false)}
+          modaltitle={modalTitle}
+          modalbutton={modalButton}
+          updateid={updateId}
+        />
       )}
     </>
   );

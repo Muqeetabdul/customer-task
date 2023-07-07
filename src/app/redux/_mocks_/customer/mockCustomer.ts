@@ -5,8 +5,20 @@ import { Customer } from "../mockTypes";
 
 export default function mockCustomer(mock: MockAdapter) {
   mock.onPost("api/customers").reply(({ data }) => {
-    const { customer } = JSON.parse(data);
-    const { firstName = "", lastName = "", email = "", userName = "", gender = "Female", status = 0, dateOfBbirth = "01/01/2019", ipAddress = "127.0.0.1", type = 1 } = customer;
+    console.log(data);
+    const customer = JSON.parse(data);
+    console.log(customer);
+    const {
+      firstName = "",
+      lastName = "",
+      email = "",
+      userName = "",
+      gender = "Female",
+      status = 0,
+      dateOfBbirth = "01/01/2019",
+      ipAddress = "127.0.0.1",
+      type = 1,
+    } = customer;
 
     const id = generateUserId();
     const newCustomer: Customer = {
@@ -54,7 +66,7 @@ export default function mockCustomer(mock: MockAdapter) {
   });
 
   mock.onGet(/api\/customers\/\d+/).reply((config) => {
-    console.log("I am in GET Method API")
+    console.log("I am in GET Method API");
     if (config?.url) {
       const id = config.url.match(/api\/customers\/(\d+)/)![1];
       const customer = customers.find((el) => el.id === +id);
@@ -70,9 +82,10 @@ export default function mockCustomer(mock: MockAdapter) {
   mock.onPut(/api\/customers\/\d+/).reply((config) => {
     if (config?.url) {
       const id = config.url.match(/api\/customers\/(\d+)/)![1];
-      const { customer } = JSON.parse(config.data);
+      const customer = JSON.parse(config.data);
+      // console.log(" @@@ PUT ", customer)
       const index = customers.findIndex((el) => el.id === +id);
-      if (!index) {
+      if (index < 0) {
         return [400];
       }
 
@@ -99,6 +112,9 @@ export default function mockCustomer(mock: MockAdapter) {
 }
 
 function generateUserId() {
+  if (customers.length === 0) {
+    return 1; // Return 1 as the initial ID if the customers array is empty
+  }
   const ids = customers.map((el) => el.id);
   const maxId = Math.max(...ids);
   return maxId + 1;
