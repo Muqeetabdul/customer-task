@@ -52,8 +52,6 @@ $font-family: "arial";
   width: 54%;
   height: 12vh;
   margin-bottom: 20px;
-  border-radius: 5px;
-  background: #eee4ff;
 }
 //login Form
 .login-form {
@@ -84,36 +82,35 @@ $font-family: "arial";
   }
 }
 
-@media all and (max-width: 500px){
+@media all and (max-width: 500px) {
   .login-form-header {
     width: 100%;
     height: 30vh;
     float: left;
     padding-top: 35% !important;
-    text-align: center; 
+    text-align: center;
     line-height: 15px;
   }
 }
-@media all and (max-width: 600px){
-    .assignment{
-        display: none;
-    }
-    .login-form-header {
-        width: 100%;
-        height: 30vh;
-        float: left;
-        padding-top: 20%;
-        text-align: center;
-        line-height: 15px;
-    }
-    .login-form-container{
-        width: 100%;
-    }
-    .login-notify{
-        width: 90%;
-    }
-    .login-form{
-        width: 90%;
-    }
-
+@media all and (max-width: 600px) {
+  .assignment {
+    display: none;
+  }
+  .login-form-header {
+    width: 100%;
+    height: 30vh;
+    float: left;
+    padding-top: 20%;
+    text-align: center;
+    line-height: 15px;
+  }
+  .login-form-container {
+    width: 100%;
+  }
+  .login-notify {
+    width: 90%;
+  }
+  .login-form {
+    width: 90%;
+  }
 }

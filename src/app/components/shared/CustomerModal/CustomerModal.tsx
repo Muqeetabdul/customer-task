@@ -57,9 +57,9 @@ function CustomerModal(props: any) {
       type: 0,
     },
   });
-  const watchShowAge = watch("firstname");
 
   const onSubmit = (data: any) => {
+    // Update Customer
     if (updateData.id) {
       axios
         .put(`api/customers/${props.updateid}`, {
@@ -85,6 +85,9 @@ function CustomerModal(props: any) {
             console.log("Error creating request:", error.message);
           }
         });
+        setTimeout(() => {
+          props.onHide();
+        }, 500);
     } else {
       //adding new customer
       try {
@@ -121,11 +124,11 @@ function CustomerModal(props: any) {
         <Modal.Body className="modal-style">
           <form className="form-group" noValidate>
             <div className="form-container">
-              <div className="grid-item">
+            <div className="grid-item">
                 <label>Enter First Name</label>
                 <input
                   type="text"
-                  className={`form-control ${errors.firstname} ? "is-invalid" : ""`}
+                  className={`form-control ${errors.firstname ? "is-invalid" : "form-control"}`}
                   placeholder="First Name"
                   {...register("firstname", {
                     required: { value: true, message: "Firstname is required" },
@@ -133,10 +136,8 @@ function CustomerModal(props: any) {
                     maxLength: 45,
                   })}
                 ></input>
-                {watchShowAge === "" && (
-                  <p>
-                    Please Enter <b>Firstname</b>
-                  </p>
+                {!errors.firstname && (
+                  <div className="valid-feedback">Firstname entered correct</div>
                 )}
                 {errors.firstname && (
                   <div className="invalid-feedback">
@@ -154,13 +155,12 @@ function CustomerModal(props: any) {
                   </div>
                 )}
               </div>
+              {/* ---Firstname END--- */}
               <div className="grid-item">
                 <label>Enter Last Name</label>
                 <input
                   type="text"
-                  className={`form-control ${
-                    errors.lastname ? "is-invalid" : ""
-                  }`}
+                  className={`form-control ${errors.lastname ? "is-invalid" : "form-control"}`}
                   placeholder="Last Name"
                   {...register("lastname", {
                     required: { value: true, message: "Lastname is required" },
@@ -187,11 +187,12 @@ function CustomerModal(props: any) {
                   </div>
                 )}
               </div>
+              {/* ---Lastname END--- */}
               <div className="grid-item">
                 <label>Enter Login</label>
                 <input
                   type="text"
-                  className={`form-control ${errors.login ? "is-invalid" : ""}`}
+                  className={`form-control ${errors.login ? "is-invalid" : "form-control"}`}
                   placeholder="Login"
                   {...register("login", {
                     required: { value: true, message: "Login is required" },
@@ -204,6 +205,7 @@ function CustomerModal(props: any) {
                   <div className="invalid-feedback">{errors.login.message}</div>
                 )}
               </div>
+              {/* ---Login END--- */}
               <div className="grid-item">
                 <label>Enter Email</label>
                 <input
@@ -223,6 +225,7 @@ function CustomerModal(props: any) {
                   </div>
                 )}
               </div>
+              {/* ---Email END--- */}
               <div className="grid-item">
                 <label>Date of Birth</label>
                 <input
@@ -234,6 +237,7 @@ function CustomerModal(props: any) {
                   Please Enter <b>Date of Birth</b> in 'mm/dd/yyyy' format
                 </p>
               </div>
+              {/* ---Date Of Birth END--- */}
               <div className="grid-item">
                 <label>Enter IP Address</label>
                 <input
@@ -244,6 +248,7 @@ function CustomerModal(props: any) {
                 ></input>
                 <p>We'ill never share customer IP Address with anyone else</p>
               </div>
+              {/* ---IP Address END--- */}
               <div className="grid-item">
                 <label>Select Gender</label>
                 <select
@@ -259,6 +264,7 @@ function CustomerModal(props: any) {
                   Please select <b>Gender</b>
                 </p>
               </div>
+              {/* ---Gender END--- */}
               <div className="grid-item">
                 <label>Select Type</label>
                 <select
@@ -274,6 +280,7 @@ function CustomerModal(props: any) {
                   Please select <b>Type</b>
                 </p>
               </div>
+              {/* ---Type END--- */}
             </div>
           </form>
         </Modal.Body>

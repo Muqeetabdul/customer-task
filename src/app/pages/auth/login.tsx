@@ -9,12 +9,14 @@ import "./login.scss";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import TextInput from "../../components/form/textInput";
-
+import ShowAlert from "../../redux/auth/Alert";
+import { store } from '../../redux/store';
 const validationSchema = Yup.object({
   password: Yup.string().required(),
   email: Yup.string().email().required(),
 });
 const LoginPage = () => {
+  const errorAlert = store.getState().auth.error;
   const {
     register,
     handleSubmit,
@@ -28,7 +30,6 @@ const LoginPage = () => {
   const onSubmit = handleSubmit((data) => {
     dispatch(authActions.logIn(data.email, data.password));
   });
-
   return (
     <>
       <div className="assignment">
@@ -39,7 +40,14 @@ const LoginPage = () => {
         <p>Enter your username and password</p>
       </div>
       <div className="login-form-container">
-        <div className="login-notify"></div>
+        <div className="login-notify">
+          { errorAlert == undefined &&
+              <ShowAlert errorAlert={""} variant={"primary"} />
+          }
+          { errorAlert &&
+              <ShowAlert errorAlert={errorAlert} variant={"danger"} />
+          }
+        </div>
         <div className="login-form">
           <Form onSubmit={onSubmit}>
             <Form.Group className="mb-3" controlId="formBasicEmail">

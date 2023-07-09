@@ -1,3 +1,4 @@
+import { toBeRequired } from "@testing-library/jest-dom/matchers";
 import React from "react";
 import { UseFormRegister, FieldValues } from "react-hook-form";
 

@@ -34,6 +34,7 @@ export default function mockCustomer(mock: MockAdapter) {
       type,
     };
     customers.push(newCustomer);
+    // localStorage.setItem(`${id}`, JSON.stringify(newCustomer));
     return [200, { customer: newCustomer }];
   });
 

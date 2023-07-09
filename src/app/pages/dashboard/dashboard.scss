@@ -166,7 +166,7 @@ $font-family: "arial";
 }
 .customer-content-table {
   width: 100%;
-  height: 32vh;
+  height: 42vh;
   padding-left: 2%;
   table > thead > tr > th {
     color: #b5b5c3;
@@ -282,28 +282,28 @@ $font-family: "arial";
 }
 
 //Responsive for mobile phones
-@media all and (max-width: 500px){
-  .customer-topbar-content {
-    width: 30% !important;
-  }
-}
+// @media all and (max-width: 500px){
+//   .customer-topbar-content {
+//     width: 30% !important;
+//   }
+// }
 @media all and (max-width: 600px) {
   .sidebar{
     display: none;
   }
   .customer-section{
     width: 100%;
-    height: 120vh;
+    height: 155vh;
   }
   .customer-content{
-    height: 100vh;
+    height: 135vh;
   }
   .customer-topbar-content{
-    width: 21%;
+    width: 30%;
   }
   .customer-content-header > button {
     float: right;
-    margin-right: 18px;
+    margin-right: 10px;
     width: 120px;
     height: 40px;
     color: white;
@@ -315,25 +315,106 @@ $font-family: "arial";
   }
   .customer-content-header > p {
     float: left;
-    margin-left: 18px;
-    font-size: 1.4rem;
+    margin-left: 10px;
+    font-size: 1.5rem;
     margin-top: 20px;
+    font-weight: 400;
     font-family: "arial";
   }
   .customer-content-filter {
     width: 100%;
-    height: 38vh;
+    height: 37vh;
+    margin-top: 5px;
     display: flex;
     align-items: flex-start;
     flex-direction: column;
   }
-  .customer-content-table table > tbody > tr > td {
-    height: 62px;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #515364;
-    text-align: center;
-    vertical-align: middle;
+  .filter-by-status {
+    display: flex;
+    margin-left: 2%;
+    flex-direction: column;
+    align-items: flex-start;
+    > .dropdown .dropdown-style{
+      width: 270px;
+    }
+    p {
+      color: #b9b9c6;
+    }
+    p > span {
+      font-weight: bold;
+    }
+  }
+  .filter-by-type {
+    @extend .filter-by-status;
+    p {
+      color: #b9b9c6;
+    }
+    p > span {
+      font-weight: bold;
+    }
+  }
+  .filter-search {
+    @extend .filter-by-status;
+    > input {
+      height: 50px;
+      width: 270px;
+      text-indent: 1rem;
+      border-radius: 8px;
+      border: 1px solid #e4e6ef;
+    }
+    > input:focus {
+      outline-color: #5a9bec;
+    }
+    > P {
+      color: #b9b9c6;
+    }
+    p > span {
+      font-weight: bold;
+    }
+  }
+  .customer-content-table {
+    width: 100%;
+    height: 78vh;
+    padding-left: 2%;
+    table > thead > tr > th {
+      display: none;
+    }
+    table > tbody > tr > td {
+      display: block;
+      height: 62px;
+      margin-right: 20px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #515364;
+      text-align: right;
+      position: relative;
+    }
+    table > tbody > tr > td::before{
+      content: attr(aria-label);
+      position: absolute;
+      left: 0;
+      font-size: 1rem;
+      margin-left: 25px;
+      font-weight: bold;
+    }
+  }
+  .icon {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .icon-style {
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f6f9;
+    border-radius: 8px;
+    margin-right: 10px;
+    :hover {
+      cursor: pointer;
+    }
   }
   .page-link {
     height: 35px;
@@ -347,16 +428,16 @@ $font-family: "arial";
   }
   .pagination {
     height: 100%;
-    width: 60%;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     padding-top: 10px;
-    padding-left: 25% !important;
+    padding-left: 0% !important;
   }
   .customer-content-footer {
     width: 100%;
-    height: 27vh;
+    height: 10vh;
     display: flex;
   }
   .showing-rows {
@@ -419,8 +500,11 @@ $font-family: "arial";
     height: 45px;
     width: 130px;
   }
+  .customer-content-table{
+    height: 42vh;
+  }
   .customer-content-footer{
-    height: 28vh;
+    height: 10vh;
   }
   .pagination {
     height: 100%;
@@ -520,7 +604,7 @@ $font-family: "arial";
     height: 78vh;
   }
   .customer-content-footer {
-    height: 28vh;
+    height: 10vh;
   }
   .customer-content-table table > tbody > tr > td {
     height: 66px;
@@ -552,12 +636,12 @@ $font-family: "arial";
   .showing-rows{
     width: 30%;
     display: flex;
-  }
-  .showing-rows > p{
-    margin-top: 8%;
-  }
-  .showing-rows > select {
-    width: 95px;
+    p{
+      margin-top: 8%;
+    }
+    select {
+      width: 95px;
+    }
   }
 }
 //Responsiveness for 'lg' screens
@@ -598,7 +682,7 @@ $font-family: "arial";
     height: 78vh;
   }
   .customer-content-footer {
-    height: 28vh;
+    height: 10vh;
   }
   .sidebar-header p {
     color: #3699fe;
@@ -620,7 +704,7 @@ $font-family: "arial";
     height: 78vh;
   }
   .customer-content-footer {
-    height: 28vh;
+    height: 10vh;
   }
   .pagination {
     height: 100%;
@@ -657,7 +741,7 @@ $font-family: "arial";
     margin-top: 15px;
   }
   .customer-content-footer {
-    height: 17vh;
+    height: 10vh;
   }
 
   .showing-rows > p {

@@ -6,31 +6,32 @@ import { Login, User } from "../api/interfaces";
 import { toast } from "react-hot-toast";
 const { actions } = authSlice;
 
-export const logIn = (email: string, password: string) => (dispatch: AppDispatch) => {
-  dispatch(actions.startCall);
-  const loginRequest: LoginRequest = {
-    email,
-    password,
+export const logIn =
+  (email: string, password: string) => (dispatch: AppDispatch) => {
+    dispatch(actions.startCall);
+    const loginRequest: LoginRequest = {
+      email,
+      password,
+    };
+    return serverRequest
+      .logIn(loginRequest)
+      .then((response) => {
+        const loginData: Login = {
+          user: {
+            id: response.data.id,
+            email: response.data.email,
+            username: response.data.username,
+            password: undefined,
+          },
+          token: response.data.token,
+        };
+        dispatch(actions.loggedIn(loginData));
+      })
+      .catch((error) => {
+        dispatch(actions.catchError({ error: error.response.data.error }));
+        toast.error(error.response.data.error);
+      });
   };
-  return serverRequest
-    .logIn(loginRequest)
-    .then((response) => {
-      const loginData: Login = {
-        user: {
-          id: response.data.id,
-          email: response.data.email,
-          username: response.data.username,
-          password: undefined,
-        },
-        token: response.data.token,
-      };
-      dispatch(actions.loggedIn(loginData));
-    })
-    .catch((error) => {
-      dispatch(actions.catchError({ error: error.response.data.error }));
-      toast.error(error.response.data.error);
-    });
-};
 export const Who_Am_i = () => (dispatch: AppDispatch) => {
   dispatch(actions.startCall);
   return serverRequest
@@ -45,7 +46,7 @@ export const Who_Am_i = () => (dispatch: AppDispatch) => {
       dispatch(actions.whoAmI(user));
     })
     .catch((error) => {
-      console.log(error.response,"========")
+      console.log(error.response, "========");
       dispatch(actions.catchError({ error: error.response.data.error }));
       toast.error(error.response.data.error);
     });
