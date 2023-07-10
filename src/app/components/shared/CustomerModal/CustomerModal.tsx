@@ -5,11 +5,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import axios from "axios";
+import PopUp from "../PopUp";
 
 function CustomerModal(props: any) {
   const [value, setValue] = useState("");
   const [validated, setValidated] = useState(false);
   const [updateData, setUpdateData]: any = useState({});
+  const [showPopUp, setShowPopUp] = useState(false);
   //to get values to update
   useEffect(() => {
     if (props.updateid > 0) {
@@ -105,7 +107,8 @@ function CustomerModal(props: any) {
       }
       setTimeout(() => {
         props.setshow(false);
-      }, 500);
+      }, 400);
+      setShowPopUp(true);
     }
   };
   return (
@@ -304,6 +307,9 @@ function CustomerModal(props: any) {
           </Button>
         </Modal.Footer>
       </Modal>
+      {
+        showPopUp && <PopUp show={showPopUp} setshow={setShowPopUp} /> 
+      }
     </>
   );
 }

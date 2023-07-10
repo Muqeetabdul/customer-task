@@ -28,19 +28,18 @@ export default class MockUtils {
 
     // Paginator
     // start
-    const pageNumber = _queryParams.pageNumber - 1;
-    const totalCount = entitiesResult.length;
-    const initialPos = pageNumber * _queryParams.pageSize;
-    entitiesResult = entitiesResult.slice(
-      initialPos,
-      initialPos + _queryParams.pageSize
-    );
+    // const pageNumber = _queryParams.pageNumber - 1;
+    // const totalCount = entitiesResult.length;
+    // const initialPos = pageNumber * _queryParams.pageSize;
+    // entitiesResult = entitiesResult.slice(
+    //   initialPos,
+    //   initialPos + _queryParams.pageSize
+    // );
     // end
-
     const queryResults = {
       entities: entitiesResult,
-      totalCount: totalCount,
-      errorMessage: ""
+      // totalCount: totalCount,
+      // errorMessage: ""
     };
     return queryResults;
   }
@@ -85,14 +84,17 @@ export default class MockUtils {
     let firstIndexes = [];
     let doSearch = false;
 
-    _filtrationFields.forEach(item => {
+    if (_queryObj == "") {
+      return _incomingArray;
+    }
+    _filtrationFields.forEach((item) => {
       if (item in _queryObj) {
         _incomingArray.forEach((element, index) => {
           if (element[item] === _queryObj[item]) {
             firstIndexes.push(index);
           }
         });
-        firstIndexes.forEach(element => {
+        firstIndexes.forEach((element) => {
           resultBuffer.push(_incomingArray[element]);
         });
         _incomingArray = resultBuffer.slice(0);
@@ -101,20 +103,14 @@ export default class MockUtils {
       }
     });
 
-    Object.keys(_queryObj).forEach(key => {
-      const searchText = _queryObj[key]
-        .toString()
-        .trim()
-        .toLowerCase();
-      if (key && !_filtrationFields.some(e => e === key) && searchText) {
+    Object.keys(_queryObj).forEach((key) => {
+      const searchText = _queryObj[key].toString().trim().toLowerCase();
+      if (key && !_filtrationFields.some((e) => e === key) && searchText) {
         doSearch = true;
         try {
           _incomingArray.forEach((element, index) => {
             if (element[key] || (element[key] === 0 && searchText === "0")) {
-              const _val = element[key]
-                .toString()
-                .trim()
-                .toLowerCase();
+              const _val = element[key].toString().trim().toLowerCase();
               if (
                 _val.indexOf(searchText) > -1 &&
                 indexes.indexOf(index) === -1
@@ -133,10 +129,9 @@ export default class MockUtils {
       return _incomingArray;
     }
 
-    indexes.forEach(re => {
+    indexes.forEach((re) => {
       result.push(_incomingArray[re]);
     });
-
-    return result;
+    return result; //contains filtered customers
   }
 }
