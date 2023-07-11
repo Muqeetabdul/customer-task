@@ -1,43 +1,71 @@
-import React, { useEffect, useState } from "react";
-import "./dashboard.scss";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../redux/store";
+//Update ICON
+import { BiEdit } from "react-icons/bi";
+//Delete ICON
+import { MdDeleteOutline } from "react-icons/md";
+//Pagination
+import { PaginationControl } from "react-bootstrap-pagination-control";
+//Customers Array
+import { customers } from "../../redux/_mocks_/mockData/customerTableMock";
+//Customer TYPEs
+import { Customer } from "../../redux/_mocks_/mockTypes/cutomer";
 import * as authActions from "../../redux/auth/authActions";
 import Dropdown from "react-bootstrap/Dropdown";
 import Table from "react-bootstrap/Table";
-import { BiEdit } from "react-icons/bi";
-import { MdDeleteOutline } from "react-icons/md";
-import { PaginationControl } from "react-bootstrap-pagination-control";
-import CustomerModal from "../../components/shared/CustomerModal/CustomerModal";
-import DeleteCustomer from "../../components/shared/DeleteCustomer";
-import { customers } from "../../redux/_mocks_/mockData/customerTableMock";
+//Modal to ADD/UPDATE Customers
+import CustomerModal from "../../components/shared/Modals/CustomerModal";
+//Modal to DELETE Customers
+import DeleteCustomer from "../../components/shared/Modals/DeleteModal";
 import axios from "axios";
-import { Customer } from "../../redux/_mocks_/mockTypes/cutomer";
+import "./dashboard.scss";
+import PopUp from "../../components/shared/PopUp";
 
 const Dashboard = () => {
   const dispatch: AppDispatch = useDispatch();
-  const [customersList, setCustomersList] = useState(customers);
+  //to show no of rows in dashboard footer
+  const total_Rows = customers.length;
+  //Selected Rows
+  const [selectedRows, setSelectedRows] = useState(3);
+  //States for pagination 
+  //* Start
   const [page, setPage] = useState(1);
-  const [recordsPerPage, setrecordsPerPage] = useState(3);
-  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
+  const [show, setShow] = useState(false);
+  const [recordsPerPage, setrecordsPerPage] = useState(1);
+  const firstIndex = (page - 1) * recordsPerPage;
+  const lastIndex = page * recordsPerPage;
+  const total_No_Of_Pages = Math.ceil(customers.length / recordsPerPage);
+  const [totalPages, setTotalPages] = useState(total_No_Of_Pages);
+  //* END
+  //States for search criteria
   const [search, setSearch] = useState("");
   const [type, setType] = useState<number | undefined>();
   const [status, setStatus] = useState<number | undefined>();
-  const [totalPages, setTotalPages] = useState(8);
-  const firstIndex = (page - 1) * recordsPerPage;
-  const lastIndex = page * recordsPerPage;
-  const rows = firstIndex * lastIndex;
+  //after all search criteria fullfiled, filtered customers array return
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>(customers);
+  //Customers to show on each page
   const selected_customer = filteredCustomers.slice(firstIndex, lastIndex);
+  //to call Customer Modal
   const [isShow, setIsShow] = useState(false);
+  //Store loggedIn user value
   const { user } = useSelector((state: any) => state.auth);
+  //to call Delete Modal
   const [showDelete, setShowDelete] = useState<boolean>(false);
+  //to call update modal
   const [showUpdate, setShowUpdate] = useState<boolean>(false);
+  //to set modal title according to call
   const [modalTitle, setModalTitle] = useState<string>("");
+  //to set modal footer button acc to call
   const [modalButton, setModalButton] = useState<string>("");
   const [deleteId, setDeleteId] = useState<number | undefined>(0);
   const [updateId, setUpdateId] = useState<number | undefined>(0);
-  const [showPopUp, setShowPopUp] = useState(false);
-
+  const [isUpdate, setIsUpdate] = useState(false); 
+  const [isDeleted, setIsDeleted] = useState(false); 
+  //To change no of rows of Customers according to selected rows
+  useEffect(() => {
+    setrecordsPerPage(selectedRows);
+  }, [selectedRows])
   //To show only (one record per page) & (total no of pages) in mobile view
   useEffect(() => {
     if (window.screen.width <= 600) {
@@ -45,7 +73,7 @@ const Dashboard = () => {
       setTotalPages(5);
     }
   }, []);
-  // API to filter (type & status) & search customers
+  // API to filter (type & status) & (search) customers
   useEffect(() => {
     axios
       .post("api/customers/find", {
@@ -68,7 +96,7 @@ const Dashboard = () => {
       .catch((error) => {
         console.log(error);
       });
-  }, [search, type, status, customersList]);
+  }, [search, type, status, isUpdate, isDeleted]);
   //Search API END
 
   //logout
@@ -119,6 +147,10 @@ const Dashboard = () => {
       setType(0);
     }
   };
+  //to set value of SHOWING_ROWS select
+  const handle_Showing_Rows = (event: any) => {
+    setSelectedRows(event.target.value);
+  };
   return (
     <>
       <div className="container">
@@ -156,7 +188,10 @@ const Dashboard = () => {
                     className="dropdown-style"
                     id="dropdown-basic"
                   >
-                    All
+                    {status === undefined && "All"}
+                    {status === 1 && "Suspended"}
+                    {status === 2 && "Pending"}
+                    {status === 0 && "Active"}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item onClick={() => handleStatus("All")}>
@@ -184,7 +219,9 @@ const Dashboard = () => {
                     variant="success"
                     id="dropdown-basic"
                   >
-                    All
+                    {type === undefined && "All"}
+                    {type === 1 && "Business"}
+                    {type === 0 && "Indiviual"}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item onClick={() => handleType("All")}>
@@ -303,7 +340,8 @@ const Dashboard = () => {
               </div>
               <div className="showing-rows">
                 <select
-                  defaultValue={"1"}
+                  onChange={(event) => handle_Showing_Rows(event)}
+                  value={selectedRows}
                   className="form-select"
                   style={{
                     backgroundColor: "#f4f6f9",
@@ -311,11 +349,13 @@ const Dashboard = () => {
                     border: "none",
                   }}
                 >
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
+                  <option value={1}>1</option>
+                  <option value={2}>2</option>
+                  <option value={3}>3</option>
+                  <option value={4}>4</option>
+                  <option value={5}>5</option>
                 </select>
-                <p>Showing rows 1 to 3 of {rows}</p>
+                <p>Showing rows {selectedRows} to 5 of {total_Rows}</p>
               </div>
             </div>
             {/* ---- customer-content-footer END ---- */}
@@ -328,31 +368,38 @@ const Dashboard = () => {
       {isShow && (
         <CustomerModal
           show={isShow} //to show new customer modal
-          setshow={setIsShow} //to close modal after adding new customer
           modaltitle={modalTitle} //to show modal title "New Customer"
-          onHide={() => setIsShow(false)} //for close button on modal
           modalbutton={modalButton} //to show save in modal button
+          onHide={() => {setIsShow(false);setShow(true)}} //for close button on modal
+          setIsUpdate={() => setIsUpdate(current => !current)}
+          isUpdate={isUpdate}
         />
       )}
       {/* To call Delete Modal */}
       {showDelete && (
         <DeleteCustomer
           show={showDelete} //to show delete modal
-          setShowDelete={setShowDelete} //to close delete modal after deletion
           deleteid={deleteId} //customer ID that is to be deleted
-          onHide={() => setShowDelete(false)} //for close button
+          onHide={() => {setShowDelete(false)}} //for close button
+          isDeleted={isDeleted}
+          setIsDeleted={() => setIsDeleted(current => !current)}
         />
       )}
       {/* To call Update Modal */}
       {showUpdate && (
         <CustomerModal
           show={showUpdate} //to show modal
-          onHide={() => setShowUpdate(false)} //for close button modal
+          updateid={updateId} //customer ID to update
           modaltitle={modalTitle} //modal title "update customer"
           modalbutton={modalButton} //to show "update" in button
-          updateid={updateId} //customer ID to update
+          onHide={() => setShowUpdate(false)} //for close button modal
+          setIsUpdate={() => setIsUpdate(current => !current)}
+          isUpdate={isUpdate}
         />
-      )}
+        )}
+        {show ? 
+      <PopUp  show={show} setShow={setShow} />
+      :""}
     </>
   );
 };

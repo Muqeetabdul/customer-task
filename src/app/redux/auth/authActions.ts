@@ -29,7 +29,6 @@ export const logIn =
       })
       .catch((error) => {
         dispatch(actions.catchError({ error: error.response.data.error }));
-        toast.error(error.response.data.error);
       });
   };
 export const Who_Am_i = () => (dispatch: AppDispatch) => {

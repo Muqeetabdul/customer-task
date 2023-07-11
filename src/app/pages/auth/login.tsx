@@ -1,7 +1,6 @@
-import React from "react";
 import { useForm } from "react-hook-form";
 import * as authActions from "../../redux/auth/authActions";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../redux/store";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -9,14 +8,15 @@ import "./login.scss";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import TextInput from "../../components/form/textInput";
-import ShowAlert from "../../redux/auth/Alert";
-import { store } from '../../redux/store';
+import ShowAlert from "../../components/shared/Alert";
 const validationSchema = Yup.object({
   password: Yup.string().required(),
   email: Yup.string().email().required(),
 });
 const LoginPage = () => {
-  const errorAlert = store.getState().auth.error;
+  //getting value of error from store
+  const { error} = useSelector((state: any)=> state.auth);
+  //destructuring useForm
   const {
     register,
     handleSubmit,
@@ -41,11 +41,13 @@ const LoginPage = () => {
       </div>
       <div className="login-form-container">
         <div className="login-notify">
-          { errorAlert == undefined &&
+          {/* to show alert, use demo email and password on page load  */}
+          { error === undefined &&
               <ShowAlert errorAlert={""} variant={"primary"} />
           }
-          { errorAlert &&
-              <ShowAlert errorAlert={errorAlert} variant={"danger"} />
+          {/* to show error alert */}
+          { error &&
+              <ShowAlert errorAlert={error} variant={"danger"} />
           }
         </div>
         <div className="login-form">
@@ -56,6 +58,7 @@ const LoginPage = () => {
                 type={"email"}
                 register={register}
                 placeholder='Enter E-mail'
+                className={`form-control ${errors.email?.message ? "is-invalid" : "is-valid" }`}
                 errorMessage={errors.email?.message}
               />
             </Form.Group>
@@ -64,6 +67,7 @@ const LoginPage = () => {
                 name="password"
                 type={"password"}
                 register={register}
+                className={`form-control ${errors.password ? "is-invalid" : "is-valid" }`}
                 errorMessage={errors["password"]?.message}
               />
             </Form.Group>

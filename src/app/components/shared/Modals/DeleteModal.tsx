@@ -6,15 +6,21 @@ import axios from "axios";
 
 function DeleteCustomer(props: any) {
   const handleSubmit = () => {
+    //DELETE API
     try {
       axios.delete(`api/customers/${props.deleteid}`).then((response) => {
         console.log("DELETED");
       });
     } catch (error) {
-      console.log(error);
+      console.log(
+        "ERROR ON DELETE_CUSTOMER_MODAL DUE TO DELETE_API FAIL",
+        error
+      );
     }
+    //TO CLOSE DELETE MODAL
     setTimeout(() => {
-      props.setShowDelete(false);
+      props.onHide();
+      props.setIsDeleted();
     }, 400);
   };
   return (

@@ -5,9 +5,7 @@ import { Customer } from "../mockTypes";
 
 export default function mockCustomer(mock: MockAdapter) {
   mock.onPost("api/customers").reply(({ data }) => {
-    console.log(data);
     const customer = JSON.parse(data);
-    console.log(customer);
     const {
       firstName = "",
       lastName = "",
@@ -67,7 +65,6 @@ export default function mockCustomer(mock: MockAdapter) {
   });
 
   mock.onGet(/api\/customers\/\d+/).reply((config) => {
-    console.log("I am in GET Method API");
     if (config?.url) {
       const id = config.url.match(/api\/customers\/(\d+)/)![1];
       const customer = customers.find((el) => el.id === +id);

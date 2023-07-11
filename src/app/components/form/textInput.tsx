@@ -10,9 +10,11 @@ export interface TextInputProps {
   label?: string;
   placeholder?: string;
   className?: string;
+  required?: boolean; 
+  message?: string;
 }
 
-const TextInput = ({ type, name, register, errorMessage, label, placeholder, className }: TextInputProps) => {
+const TextInput = ({ type, name, register, errorMessage, label, placeholder, className}: TextInputProps) => {
   return (
     <>
       <input placeholder={placeholder} type={type} className={className} {...register(name)} />

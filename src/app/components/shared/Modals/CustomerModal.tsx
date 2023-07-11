@@ -3,15 +3,50 @@ import Modal from "react-bootstrap/Modal";
 import "./CustomerModal.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import axios from "axios";
-import PopUp from "../PopUp";
-
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+//YUP Validation Schema
+const schema = Yup.object({
+  firstname: Yup.string()
+    .required("Firstname is Required")
+    .matches(/^[a-z ,.'-]+$/i, {
+      message: "Invalid Firstname",
+      excludeEmptyString: true,
+    })
+    .defined()
+    .trim(),
+  lastname: Yup.string()
+    .required("Lastname is Required")
+    .matches(/^[a-z ,.'-]+$/i, {
+      message: "Invalid Lastname",
+      excludeEmptyString: true,
+    })
+    .defined()
+    .trim(),
+  login: Yup.string()
+    .matches(/^(\d{4})$/, { message: "Login must be 4 digits" })
+    .trim(),
+  email: Yup.string().email().required("lastname is Required").trim(),
+  dob: Yup.string()
+    .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/)
+    .required()
+    .trim(),
+  ip: Yup.string()
+    .required()
+    .matches(/(^(\d{1,3}\.){3}(\d{1,3})$)/, {
+      message: "Invalid IP address",
+      excludeEmptyString: true,
+    })
+    .test("ip", "IP address value should be less or equal to 255", (value) => {
+      if (value === undefined || value.trim() === "") return true;
+      return value.split(".").find((i) => parseInt(i) > 255) === undefined;
+    }),
+});
+//Component
 function CustomerModal(props: any) {
-  const [value, setValue] = useState("");
-  const [validated, setValidated] = useState(false);
   const [updateData, setUpdateData]: any = useState({});
-  const [showPopUp, setShowPopUp] = useState(false);
   //to get values to update
   useEffect(() => {
     if (props.updateid > 0) {
@@ -22,6 +57,7 @@ function CustomerModal(props: any) {
         .catch((error) => console.log(error));
     }
   }, []);
+  //To SHOW pre-filled values
   useEffect(() => {
     if (updateData && updateData.id) {
       const checked_data = {
@@ -38,13 +74,11 @@ function CustomerModal(props: any) {
         reset(checked_data);
       }
     }
-  }, [updateData]);
-
+  }, [updateData, props.isUpdate]);
+  //Destructuring useForm
   const {
     register,
-    watch,
     reset,
-    control,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -58,6 +92,7 @@ function CustomerModal(props: any) {
       gender: "",
       type: 0,
     },
+    resolver: yupResolver(schema),
   });
 
   const onSubmit = (data: any) => {
@@ -65,6 +100,7 @@ function CustomerModal(props: any) {
     if (updateData.id) {
       axios
         .put(`api/customers/${props.updateid}`, {
+          ...updateData,
           firstName: data.firstname,
           lastName: data.lastname,
           email: data.email,
@@ -87,9 +123,10 @@ function CustomerModal(props: any) {
             console.log("Error creating request:", error.message);
           }
         });
-        setTimeout(() => {
-          props.onHide();
-        }, 500);
+      setTimeout(() => {
+        props.onHide();
+        props.setIsUpdate(true);
+      }, 500);
     } else {
       //adding new customer
       try {
@@ -106,9 +143,10 @@ function CustomerModal(props: any) {
         console.log(error);
       }
       setTimeout(() => {
-        props.setshow(false);
+        
+        props.onHide();
+        props.setIsUpdate();
       }, 400);
-      setShowPopUp(true);
     }
   };
   return (
@@ -127,11 +165,14 @@ function CustomerModal(props: any) {
         <Modal.Body className="modal-style">
           <form className="form-group" noValidate>
             <div className="form-container">
-            <div className="grid-item">
+              {/* Firstname START */}
+              <div className="grid-item">
                 <label>Enter First Name</label>
                 <input
                   type="text"
-                  className={`form-control ${errors.firstname ? "is-invalid" : "form-control"}`}
+                  className={`form-control ${
+                    errors.firstname ? "is-invalid" : "form-control"
+                  }`}
                   placeholder="First Name"
                   {...register("firstname", {
                     required: { value: true, message: "Firstname is required" },
@@ -140,7 +181,9 @@ function CustomerModal(props: any) {
                   })}
                 ></input>
                 {!errors.firstname && (
-                  <div className="valid-feedback">Firstname entered correct</div>
+                  <div className="valid-feedback">
+                    Firstname entered correct
+                  </div>
                 )}
                 {errors.firstname && (
                   <div className="invalid-feedback">
@@ -158,12 +201,15 @@ function CustomerModal(props: any) {
                   </div>
                 )}
               </div>
-              {/* ---Firstname END--- */}
+              {/* --- END--- */}
+              {/* Lastname START */}
               <div className="grid-item">
                 <label>Enter Last Name</label>
                 <input
                   type="text"
-                  className={`form-control ${errors.lastname ? "is-invalid" : "form-control"}`}
+                  className={`form-control ${
+                    errors.lastname ? "is-invalid" : "form-control"
+                  }`}
                   placeholder="Last Name"
                   {...register("lastname", {
                     required: { value: true, message: "Lastname is required" },
@@ -190,16 +236,17 @@ function CustomerModal(props: any) {
                   </div>
                 )}
               </div>
-              {/* ---Lastname END--- */}
+              {/* --- END--- */}
+              {/* Login START */}
               <div className="grid-item">
                 <label>Enter Login</label>
                 <input
                   type="text"
-                  className={`form-control ${errors.login ? "is-invalid" : "form-control"}`}
+                  className={`form-control ${
+                    errors.login ? "is-invalid" : "form-control"
+                  }`}
                   placeholder="Login"
-                  {...register("login", {
-                    required: { value: true, message: "Login is required" },
-                  })}
+                  {...register("login")}
                 ></input>
                 {!errors.login && (
                   <div className="valid-feedback">Login entered correct</div>
@@ -208,7 +255,8 @@ function CustomerModal(props: any) {
                   <div className="invalid-feedback">{errors.login.message}</div>
                 )}
               </div>
-              {/* ---Login END--- */}
+              {/* --- END--- */}
+              {/* Email START */}
               <div className="grid-item">
                 <label>Enter Email</label>
                 <input
@@ -228,7 +276,8 @@ function CustomerModal(props: any) {
                   </div>
                 )}
               </div>
-              {/* ---Email END--- */}
+              {/* --- END--- */}
+              {/* Date of Birth Start */}
               <div className="grid-item">
                 <label>Date of Birth</label>
                 <input
@@ -240,7 +289,8 @@ function CustomerModal(props: any) {
                   Please Enter <b>Date of Birth</b> in 'mm/dd/yyyy' format
                 </p>
               </div>
-              {/* ---Date Of Birth END--- */}
+              {/* --- END --- */}
+              {/* IP Address START */}
               <div className="grid-item">
                 <label>Enter IP Address</label>
                 <input
@@ -251,23 +301,25 @@ function CustomerModal(props: any) {
                 ></input>
                 <p>We'ill never share customer IP Address with anyone else</p>
               </div>
-              {/* ---IP Address END--- */}
+              {/* --- END --- */}
+              {/* Gender Start */}
               <div className="grid-item">
                 <label>Select Gender</label>
                 <select
-                  defaultValue={"female"}
+                  defaultValue={"Female"}
                   {...register("gender")}
                   className="form-select"
                   style={{ backgroundColor: "#f4f6f9" }}
                 >
-                  <option>Male</option>
-                  <option>Female</option>
+                  <option value={"Male"}>Male</option>
+                  <option value={"Female"}>Female</option>
                 </select>
                 <p>
                   Please select <b>Gender</b>
                 </p>
               </div>
-              {/* ---Gender END--- */}
+              {/* --- END --- */}
+              {/* Type START */}
               <div className="grid-item">
                 <label>Select Type</label>
                 <select
@@ -283,7 +335,7 @@ function CustomerModal(props: any) {
                   Please select <b>Type</b>
                 </p>
               </div>
-              {/* ---Type END--- */}
+              {/* --- END --- */}
             </div>
           </form>
         </Modal.Body>
@@ -307,9 +359,6 @@ function CustomerModal(props: any) {
           </Button>
         </Modal.Footer>
       </Modal>
-      {
-        showPopUp && <PopUp show={showPopUp} setshow={setShowPopUp} /> 
-      }
     </>
   );
 }
