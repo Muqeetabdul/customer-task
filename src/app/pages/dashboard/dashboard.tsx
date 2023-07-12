@@ -20,15 +20,16 @@ import CustomerModal from "../../components/shared/Modals/CustomerModal";
 import DeleteCustomer from "../../components/shared/Modals/DeleteModal";
 import axios from "axios";
 import "./dashboard.scss";
-import PopUp from "../../components/shared/PopUp";
+import { Toaster, toast } from "react-hot-toast";
 
 const Dashboard = () => {
+  <Toaster />;
   const dispatch: AppDispatch = useDispatch();
   //to show no of rows in dashboard footer
   const total_Rows = customers.length;
   //Selected Rows
   const [selectedRows, setSelectedRows] = useState(3);
-  //States for pagination 
+  //States for pagination
   //* Start
   const [page, setPage] = useState(1);
   const [show, setShow] = useState(false);
@@ -43,7 +44,8 @@ const Dashboard = () => {
   const [type, setType] = useState<number | undefined>();
   const [status, setStatus] = useState<number | undefined>();
   //after all search criteria fullfiled, filtered customers array return
-  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>(customers);
+  const [filteredCustomers, setFilteredCustomers] =
+    useState<Customer[]>(customers);
   //Customers to show on each page
   const selected_customer = filteredCustomers.slice(firstIndex, lastIndex);
   //to call Customer Modal
@@ -60,12 +62,17 @@ const Dashboard = () => {
   const [modalButton, setModalButton] = useState<string>("");
   const [deleteId, setDeleteId] = useState<number | undefined>(0);
   const [updateId, setUpdateId] = useState<number | undefined>(0);
-  const [isUpdate, setIsUpdate] = useState(false); 
-  const [isDeleted, setIsDeleted] = useState(false); 
+  //to re-render filtered customers array whenever any customer updated/Added/Deleted
+  //*Start
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
+  const [customerForUpdate, setCustomerForUpdate] = useState<any>();
+  //*END
   //To change no of rows of Customers according to selected rows
   useEffect(() => {
     setrecordsPerPage(selectedRows);
-  }, [selectedRows])
+  }, [selectedRows]);
   //To show only (one record per page) & (total no of pages) in mobile view
   useEffect(() => {
     if (window.screen.width <= 600) {
@@ -73,7 +80,7 @@ const Dashboard = () => {
       setTotalPages(5);
     }
   }, []);
-  // API to filter (type & status) & (search) customers
+  //* API to filter (type & status) & (search) customers
   useEffect(() => {
     axios
       .post("api/customers/find", {
@@ -96,18 +103,28 @@ const Dashboard = () => {
       .catch((error) => {
         console.log(error);
       });
-  }, [search, type, status, isUpdate, isDeleted]);
-  //Search API END
-
+  }, [search, type, status, isUpdate, isDeleted, isAdded]);
+  //*Search API END
   //logout
   const logout = () => {
     dispatch(authActions.logout());
   };
   //to call modal for new customer and modal title
-  const newCustomer = () => {
-    setIsShow((current) => !current);
-    setModalTitle("New Customer");
-    setModalButton("Save");
+  const newCustomer = (id: any) => {
+    if (id === undefined) {
+      setIsShow((current) => !current);
+      setModalTitle("New Customer");
+      setModalButton("Save");
+      setCustomerForUpdate(undefined);
+    } else {
+      let customerForEdit = selected_customer.find(
+        (item: any) => item.id === id
+      );
+      if (customerForEdit) {
+        setCustomerForUpdate({ ...customerForEdit });
+        setIsShow(true);
+      }
+    }
   };
   //call delete modal and set delete id
   const handleDelete = (id: any) => {
@@ -121,35 +138,22 @@ const Dashboard = () => {
     setModalButton("Update");
     setUpdateId(id);
   };
-  //to change page in pagination
-  const changePage = (newPage: any) => {
-    setPage(newPage);
-  };
-  //to set values of status to pass to filter
-  const handleStatus = (status: any) => {
-    if (status == "All") {
-      setStatus(undefined);
-    } else if (status == "Suspended") {
-      setStatus(1);
-    } else if (status == "Active") {
-      setStatus(0);
-    } else if (status == "Pending") {
-      setStatus(2);
+  const handleDeleteSubmit = () => {
+    if (deleteId) {
+      axios
+        .delete(`api/customers/${deleteId}`)
+        .then((response) => {
+          console.log("DELETED");
+          setShowDelete(false);
+          toast.error("Customer Deleted");
+          setDeleteId(undefined);
+          setIsDeleted(true);
+        })
+        .catch((error) => {
+          setShowDelete(false);
+          toast.error("Unable To Deleted");
+        });
     }
-  };
-  //to set values of type to pass to filter
-  const handleType = (type: any) => {
-    if (type == "All") {
-      setType(undefined);
-    } else if (type == "Business") {
-      setType(1);
-    } else if (type == "Indiviual") {
-      setType(0);
-    }
-  };
-  //to set value of SHOWING_ROWS select
-  const handle_Showing_Rows = (event: any) => {
-    setSelectedRows(event.target.value);
   };
   return (
     <>
@@ -169,7 +173,7 @@ const Dashboard = () => {
           <div className="customer-topbar">
             <div className="customer-topbar-content">
               <p>
-                <span>Hi,</span> Sean
+                <span>Hi,</span> {user?.username}
               </p>
               <button onClick={() => logout()}>S</button>
             </div>
@@ -178,7 +182,9 @@ const Dashboard = () => {
           <div className="customer-content">
             <div className="customer-content-header">
               <p>Customers list</p>
-              <button onClick={() => newCustomer()}>New Customer</button>
+              <button onClick={() => newCustomer(undefined)}>
+                New Customer
+              </button>
             </div>
             {/* ---- Customer Content Header END ---- */}
             <div className="customer-content-filter">
@@ -194,16 +200,16 @@ const Dashboard = () => {
                     {status === 0 && "Active"}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
-                    <Dropdown.Item onClick={() => handleStatus("All")}>
+                    <Dropdown.Item onClick={() => setStatus(undefined)}>
                       All
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleStatus("Suspended")}>
+                    <Dropdown.Item onClick={() => setStatus(1)}>
                       Suspended
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleStatus("Pending")}>
+                    <Dropdown.Item onClick={() => setStatus(2)}>
                       Pending
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleStatus("Active")}>
+                    <Dropdown.Item onClick={() => setStatus(0)}>
                       Active
                     </Dropdown.Item>
                   </Dropdown.Menu>
@@ -224,13 +230,13 @@ const Dashboard = () => {
                     {type === 0 && "Indiviual"}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
-                    <Dropdown.Item onClick={() => handleType("All")}>
+                    <Dropdown.Item onClick={() => setType(undefined)}>
                       All
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleType("Business")}>
+                    <Dropdown.Item onClick={() => setType(1)}>
                       Business
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleType("Indiviual")}>
+                    <Dropdown.Item onClick={() => setType(0)}>
                       Indiviual
                     </Dropdown.Item>
                   </Dropdown.Menu>
@@ -295,12 +301,13 @@ const Dashboard = () => {
                           <div className="icon">
                             <div className="icon-style">
                               <BiEdit
-                                onClick={() =>
-                                  handleUpdate(
-                                    data.id,
-                                    data.firstName,
-                                    data.lastName
-                                  )
+                                onClick={
+                                  () => newCustomer(data.id)
+                                  // handleUpdate(
+                                  //   data.id,
+                                  //   data.firstName,
+                                  //   data.lastName
+                                  // )
                                 }
                                 style={{
                                   color: "#3699fe",
@@ -334,13 +341,13 @@ const Dashboard = () => {
                   page={page}
                   total={totalPages}
                   limit={1}
-                  changePage={changePage}
+                  changePage={(newPage: any) => setPage(newPage)}
                   ellipsis={4}
                 />
               </div>
               <div className="showing-rows">
                 <select
-                  onChange={(event) => handle_Showing_Rows(event)}
+                  onChange={(e: any) => setSelectedRows(e.target.value)}
                   value={selectedRows}
                   className="form-select"
                   style={{
@@ -355,7 +362,9 @@ const Dashboard = () => {
                   <option value={4}>4</option>
                   <option value={5}>5</option>
                 </select>
-                <p>Showing rows {selectedRows} to 5 of {total_Rows}</p>
+                <p>
+                  Showing rows {selectedRows} to 5 of {total_Rows}
+                </p>
               </div>
             </div>
             {/* ---- customer-content-footer END ---- */}
@@ -370,9 +379,12 @@ const Dashboard = () => {
           show={isShow} //to show new customer modal
           modaltitle={modalTitle} //to show modal title "New Customer"
           modalbutton={modalButton} //to show save in modal button
-          onHide={() => {setIsShow(false);setShow(true)}} //for close button on modal
-          setIsUpdate={() => setIsUpdate(current => !current)}
-          isUpdate={isUpdate}
+          onHide={() => {
+            setIsShow(false);
+          }} //for close button on modal
+          setIsAdded={() => setIsAdded(true)}
+          isAdded={isAdded}
+          customerForUpdate={customerForUpdate}
         />
       )}
       {/* To call Delete Modal */}
@@ -380,9 +392,12 @@ const Dashboard = () => {
         <DeleteCustomer
           show={showDelete} //to show delete modal
           deleteid={deleteId} //customer ID that is to be deleted
-          onHide={() => {setShowDelete(false)}} //for close button
+          onHide={() => {
+            setShowDelete(false);
+          }} //for close button
+          handleSubmit={handleDeleteSubmit}
           isDeleted={isDeleted}
-          setIsDeleted={() => setIsDeleted(current => !current)}
+          setIsDeleted={() => setIsDeleted((current) => !current)}
         />
       )}
       {/* To call Update Modal */}
@@ -392,14 +407,13 @@ const Dashboard = () => {
           updateid={updateId} //customer ID to update
           modaltitle={modalTitle} //modal title "update customer"
           modalbutton={modalButton} //to show "update" in button
-          onHide={() => setShowUpdate(false)} //for close button modal
-          setIsUpdate={() => setIsUpdate(current => !current)}
+          onHide={() => {
+            setShowUpdate(false);
+          }} //for close button modal
+          setIsUpdate={() => setIsUpdate((current) => !current)}
           isUpdate={isUpdate}
         />
-        )}
-        {show ? 
-      <PopUp  show={show} setShow={setShow} />
-      :""}
+      )}
     </>
   );
 };

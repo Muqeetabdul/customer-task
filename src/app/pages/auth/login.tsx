@@ -10,8 +10,8 @@ import Form from "react-bootstrap/Form";
 import TextInput from "../../components/form/textInput";
 import ShowAlert from "../../components/shared/Alert";
 const validationSchema = Yup.object({
-  password: Yup.string().required(),
-  email: Yup.string().email().required(),
+  password: Yup.string().required("Password is required"),
+  email: Yup.string().email().required("E-mail is required"),
 });
 const LoginPage = () => {
   //getting value of error from store

@@ -3,26 +3,10 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
+import { toast } from "react-hot-toast";
 
 function DeleteCustomer(props: any) {
-  const handleSubmit = () => {
-    //DELETE API
-    try {
-      axios.delete(`api/customers/${props.deleteid}`).then((response) => {
-        console.log("DELETED");
-      });
-    } catch (error) {
-      console.log(
-        "ERROR ON DELETE_CUSTOMER_MODAL DUE TO DELETE_API FAIL",
-        error
-      );
-    }
-    //TO CLOSE DELETE MODAL
-    setTimeout(() => {
-      props.onHide();
-      props.setIsDeleted();
-    }, 400);
-  };
+  const { handleSubmit } = props;
   return (
     <>
       <Modal {...props} animation={false}>

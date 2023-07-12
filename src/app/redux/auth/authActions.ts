@@ -26,9 +26,13 @@ export const logIn =
           token: response.data.token,
         };
         dispatch(actions.loggedIn(loginData));
+        toast(`Welcome! ${loginData.user.username}`, {
+          icon: "👏",
+        });
       })
       .catch((error) => {
         dispatch(actions.catchError({ error: error.response.data.error }));
+        toast.error(error.response.data.error);
       });
   };
 export const Who_Am_i = () => (dispatch: AppDispatch) => {
@@ -45,7 +49,6 @@ export const Who_Am_i = () => (dispatch: AppDispatch) => {
       dispatch(actions.whoAmI(user));
     })
     .catch((error) => {
-      console.log(error.response, "========");
       dispatch(actions.catchError({ error: error.response.data.error }));
       toast.error(error.response.data.error);
     });

@@ -7,33 +7,50 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
+import { toast } from "react-hot-toast";
+import TextInput from "../../form/textInput";
+
 //YUP Validation Schema
+const initialValues = {
+  firstName: "",
+  lastName: "",
+  login: "",
+  email: "",
+  dateOfBbirth: "",
+  ipAddress: "",
+  gender: "",
+  type: 0,
+};
 const schema = Yup.object({
-  firstname: Yup.string()
+  firstName: Yup.string()
     .required("Firstname is Required")
     .matches(/^[a-z ,.'-]+$/i, {
       message: "Invalid Firstname",
       excludeEmptyString: true,
     })
+    .min(4, "Min Lenght required 4 chracters")
+    .max(45, "Max Lenght allowed 45 chracters")
     .defined()
     .trim(),
-  lastname: Yup.string()
+  lastName: Yup.string()
     .required("Lastname is Required")
     .matches(/^[a-z ,.'-]+$/i, {
       message: "Invalid Lastname",
       excludeEmptyString: true,
     })
+    .min(4, "Min Lenght required 4 chracters")
+    .max(45, "Max Lenght allowed 45 chracters")
     .defined()
     .trim(),
   login: Yup.string()
     .matches(/^(\d{4})$/, { message: "Login must be 4 digits" })
     .trim(),
-  email: Yup.string().email().required("lastname is Required").trim(),
-  dob: Yup.string()
+  email: Yup.string().email().required("Email is Required").trim(),
+  dateOfBbirth: Yup.string()
     .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/)
-    .required()
+    .required("E-mail is required")
     .trim(),
-  ip: Yup.string()
+  ipAddress: Yup.string()
     .required()
     .matches(/(^(\d{1,3}\.){3}(\d{1,3})$)/, {
       message: "Invalid IP address",
@@ -46,6 +63,7 @@ const schema = Yup.object({
 });
 //Component
 function CustomerModal(props: any) {
+  const { customerForUpdate } = props;
   const [updateData, setUpdateData]: any = useState({});
   //to get values to update
   useEffect(() => {
@@ -82,16 +100,7 @@ function CustomerModal(props: any) {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    defaultValues: {
-      firstname: "",
-      lastname: "",
-      login: "",
-      email: "",
-      dob: "",
-      ip: "",
-      gender: "",
-      type: 0,
-    },
+    defaultValues: initialValues,
     resolver: yupResolver(schema),
   });
 
@@ -109,7 +118,10 @@ function CustomerModal(props: any) {
           gender: data.gender,
           type: data.type,
         })
-        .then((response) => console.log(response))
+        .then((response) => {
+          console.log(response);
+          toast.success("Customer Updated Successfuly");
+        })
         .catch((error) => {
           if (error.response) {
             console.log(
@@ -129,8 +141,8 @@ function CustomerModal(props: any) {
       }, 500);
     } else {
       //adding new customer
-      try {
-        axios.post("api/customers", {
+      axios
+        .post("api/customers", {
           firstName: data.firstname,
           lastName: data.lastname,
           email: data.email,
@@ -138,17 +150,41 @@ function CustomerModal(props: any) {
           ip: data.ip,
           gender: data.gender,
           type: data.type,
+        })
+        .then((response) => {
+          console.log(response);
+          toast.success("Customer Added Successfuly");
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.log(
+              "Server responded with status code:",
+              error.response.status
+            );
+            console.log("Response data:", error.response.data);
+          } else if (error.request) {
+            console.log("No response received:", error.request);
+          } else {
+            console.log("Error creating request:", error.message);
+          }
         });
-      } catch (error) {
-        console.log(error);
-      }
       setTimeout(() => {
-        
         props.onHide();
-        props.setIsUpdate();
+        props.setIsAdded();
       }, 400);
     }
   };
+
+  useEffect(() => {
+    if (customerForUpdate) {
+      reset({ ...customerForUpdate });
+      console.log("runningUpdate condition");
+    } else {
+      reset({ ...initialValues });
+      console.log("new creating  condition");
+    }
+  }, [customerForUpdate]);
+  console.log(customerForUpdate, "customerForUpdate");
   return (
     <>
       <Modal
@@ -159,7 +195,7 @@ function CustomerModal(props: any) {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            {props.modaltitle}
+            {customerForUpdate ? "EDIT" : "NEW"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="modal-style">
@@ -168,36 +204,18 @@ function CustomerModal(props: any) {
               {/* Firstname START */}
               <div className="grid-item">
                 <label>Enter First Name</label>
-                <input
+                <TextInput
                   type="text"
                   className={`form-control ${
-                    errors.firstname ? "is-invalid" : "form-control"
+                    errors.firstName ? "is-invalid" : Object.keys(errors).length ? "is-valid": ""
                   }`}
                   placeholder="First Name"
-                  {...register("firstname", {
-                    required: { value: true, message: "Firstname is required" },
-                    minLength: 4,
-                    maxLength: 45,
-                  })}
-                ></input>
-                {!errors.firstname && (
-                  <div className="valid-feedback">
-                    Firstname entered correct
-                  </div>
-                )}
-                {errors.firstname && (
+                  name={"firstName"}
+                  register={register}
+                />
+                {errors.firstName && (
                   <div className="invalid-feedback">
-                    {errors.firstname.message}
-                  </div>
-                )}
-                {errors.firstname?.type == "minLength" && (
-                  <div className="invalid-feedback">
-                    Min Lenght required 4 chracters
-                  </div>
-                )}
-                {errors.firstname?.type == "maxLength" && (
-                  <div className="invalid-feedback">
-                    Max Lenght allowed 45 chracters
+                    {errors.firstName?.message}
                   </div>
                 )}
               </div>
@@ -205,34 +223,18 @@ function CustomerModal(props: any) {
               {/* Lastname START */}
               <div className="grid-item">
                 <label>Enter Last Name</label>
-                <input
+                <TextInput
                   type="text"
                   className={`form-control ${
-                    errors.lastname ? "is-invalid" : "form-control"
+                    errors.lastName ? "is-invalid" : "form-control"
                   }`}
                   placeholder="Last Name"
-                  {...register("lastname", {
-                    required: { value: true, message: "Lastname is required" },
-                    minLength: 4,
-                    maxLength: 45,
-                  })}
-                ></input>
-                {!errors.lastname && (
-                  <div className="valid-feedback">lastname entered correct</div>
-                )}
-                {errors.lastname && (
+                  name={"lastName"}
+                  register={register}
+                />
+                {errors.lastName && (
                   <div className="invalid-feedback">
-                    {errors.lastname.message}
-                  </div>
-                )}
-                {errors.lastname?.type == "minLength" && (
-                  <div className="invalid-feedback">
-                    Min Lenght required 4 chracters
-                  </div>
-                )}
-                {errors.lastname?.type == "maxLength" && (
-                  <div className="invalid-feedback">
-                    Max Lenght allowed 45 chracters
+                    {errors.lastName?.message}
                   </div>
                 )}
               </div>
@@ -240,36 +242,34 @@ function CustomerModal(props: any) {
               {/* Login START */}
               <div className="grid-item">
                 <label>Enter Login</label>
-                <input
+                <TextInput
                   type="text"
                   className={`form-control ${
                     errors.login ? "is-invalid" : "form-control"
                   }`}
-                  placeholder="Login"
-                  {...register("login")}
-                ></input>
-                {!errors.login && (
-                  <div className="valid-feedback">Login entered correct</div>
-                )}
+                  placeholder="0000"
+                  name={"login"}
+                  register={register}
+                />
                 {errors.login && (
-                  <div className="invalid-feedback">{errors.login.message}</div>
+                  <div className="invalid-feedback">
+                    {errors.login?.message}
+                  </div>
                 )}
               </div>
               {/* --- END--- */}
               {/* Email START */}
               <div className="grid-item">
                 <label>Enter Email</label>
-                <input
+                <TextInput
                   type="text"
-                  className={`form-control ${errors.email ? "is-invalid" : ""}`}
-                  placeholder="Email"
-                  {...register("email", {
-                    required: { value: true, message: "Email is required" },
-                  })}
-                ></input>
-                {!errors.email && (
-                  <div className="valid-feedback">Email entered correct</div>
-                )}
+                  className={`form-control ${
+                    errors.email ? "is-invalid" : "form-control"
+                  }`}
+                  placeholder="demo@demo.com"
+                  name={"email"}
+                  register={register}
+                />
                 {errors.email && (
                   <div className="invalid-feedback">
                     {errors.email?.message}
@@ -280,11 +280,15 @@ function CustomerModal(props: any) {
               {/* Date of Birth Start */}
               <div className="grid-item">
                 <label>Date of Birth</label>
-                <input
+                <TextInput
                   type="text"
-                  className={`form-control ${errors.dob ? "is-invalid" : ""}`}
-                  {...register("dob", { required: true })}
-                ></input>
+                  className={`form-control ${
+                    errors.dateOfBbirth ? "is-invalid" : "form-control"
+                  }`}
+                  placeholder="12/19/2020"
+                  name={"dateOfBbirth"}
+                  register={register}
+                />
                 <p>
                   Please Enter <b>Date of Birth</b> in 'mm/dd/yyyy' format
                 </p>
@@ -293,12 +297,15 @@ function CustomerModal(props: any) {
               {/* IP Address START */}
               <div className="grid-item">
                 <label>Enter IP Address</label>
-                <input
+                <TextInput
                   type="text"
-                  className={`form-control ${errors.dob ? "is-invalid" : ""}`}
-                  placeholder="IP Address"
-                  {...register("ip")}
-                ></input>
+                  className={`form-control ${
+                    errors.ipAddress ? "is-invalid" : "form-control"
+                  }`}
+                  placeholder="127.0.0.1"
+                  name={"ipAddress"}
+                  register={register}
+                />
                 <p>We'ill never share customer IP Address with anyone else</p>
               </div>
               {/* --- END --- */}
@@ -337,7 +344,9 @@ function CustomerModal(props: any) {
               </div>
               {/* --- END --- */}
             </div>
+            {/* ---- form-container END ---- */}
           </form>
+          {/* ---- form END ---- */}
         </Modal.Body>
         <Modal.Footer>
           <Button
@@ -355,7 +364,7 @@ function CustomerModal(props: any) {
             type="submit"
             onClick={handleSubmit(onSubmit)}
           >
-            {props.modalbutton}
+            {customerForUpdate ? "UPDATE" : "CREATE"}
           </Button>
         </Modal.Footer>
       </Modal>

@@ -15,6 +15,7 @@ export interface TextInputProps {
 }
 
 const TextInput = ({ type, name, register, errorMessage, label, placeholder, className}: TextInputProps) => {
+  console.log({register})
   return (
     <>
       <input placeholder={placeholder} type={type} className={className} {...register(name)} />
