@@ -9,7 +9,7 @@ function DeleteCustomer(props: any) {
   const { handleSubmit } = props;
   return (
     <>
-      <Modal {...props} animation={false}>
+      <Modal {...props} animation={true}>
         <Modal.Header closeButton>
           <Modal.Title>Delete Customer</Modal.Title>
         </Modal.Header>

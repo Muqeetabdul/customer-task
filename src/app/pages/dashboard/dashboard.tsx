@@ -32,7 +32,6 @@ const Dashboard = () => {
   //States for pagination
   //* Start
   const [page, setPage] = useState(1);
-  const [show, setShow] = useState(false);
   const [recordsPerPage, setrecordsPerPage] = useState(1);
   const firstIndex = (page - 1) * recordsPerPage;
   const lastIndex = page * recordsPerPage;
@@ -44,24 +43,16 @@ const Dashboard = () => {
   const [type, setType] = useState<number | undefined>();
   const [status, setStatus] = useState<number | undefined>();
   //after all search criteria fullfiled, filtered customers array return
-  const [filteredCustomers, setFilteredCustomers] =
-    useState<Customer[]>(customers);
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>();
   //Customers to show on each page
-  const selected_customer = filteredCustomers.slice(firstIndex, lastIndex);
+  const selected_customer = filteredCustomers?.slice(firstIndex, lastIndex);
   //to call Customer Modal
   const [isShow, setIsShow] = useState(false);
   //Store loggedIn user value
   const { user } = useSelector((state: any) => state.auth);
   //to call Delete Modal
   const [showDelete, setShowDelete] = useState<boolean>(false);
-  //to call update modal
-  const [showUpdate, setShowUpdate] = useState<boolean>(false);
-  //to set modal title according to call
-  const [modalTitle, setModalTitle] = useState<string>("");
-  //to set modal footer button acc to call
-  const [modalButton, setModalButton] = useState<string>("");
   const [deleteId, setDeleteId] = useState<number | undefined>(0);
-  const [updateId, setUpdateId] = useState<number | undefined>(0);
   //to re-render filtered customers array whenever any customer updated/Added/Deleted
   //*Start
   const [isUpdate, setIsUpdate] = useState(false);
@@ -77,34 +68,68 @@ const Dashboard = () => {
   useEffect(() => {
     if (window.screen.width <= 600) {
       setrecordsPerPage(1);
-      setTotalPages(5);
     }
   }, []);
-  //* API to filter (type & status) & (search) customers
-  useEffect(() => {
-    axios
-      .post("api/customers/find", {
-        queryParams: {
-          filter: {
-            firstName: search,
-            lastName: search,
-            email: search,
-            status: status,
-            type: type,
-          },
-          pageNumber: page,
-          pageSize: recordsPerPage,
-        },
-      })
-      .then((response) => {
-        const data = response.data.entities;
-        setFilteredCustomers(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [search, type, status, isUpdate, isDeleted, isAdded]);
-  //*Search API END
+  //To handle Add/Update Customers logics
+  const handleCustomer = (data: any) => {
+    // Update Customer
+    if (customerForUpdate) {
+      axios
+        .put(`api/customers/${customerForUpdate.id}`, {
+          ...customerForUpdate,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          dateOfBbirth: data.dateOfBbirth,
+          ipAddress: data.ipAddress,
+          gender: data.gender,
+          type: data.type,
+        })
+        .then((response) => {
+          console.log(response);
+          toast.success("Customer Updated Successfuly");
+        })
+        .catch((error) => {
+          console.log("Customer Not Updated $$$$$$$$$$");
+          if (error.response) {
+            console.log(
+              "Server responded with status code:",
+              error.response.status
+            );
+            console.log("Response data:", error.response.data);
+          } else if (error.request) {
+            console.log("No response received:", error.request);
+          } else {
+            console.log("Error creating request:", error.message);
+          }
+        });
+      setIsShow(false);
+      setIsUpdate(true);
+    } else {
+      //adding new customer
+      axios
+        .post("api/customers", {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          dateOfBbirth: data.dateOfBbirth,
+          ipAddress: data.ipAddress,
+          gender: data.gender,
+          type: data.type,
+        })
+        .then((response) => {
+          console.log(response);
+          console.log("Customer Added ==============");
+          toast.success("Customer Added Successfuly");
+        })
+        .catch((error) => {
+          console.log(error.response.request, error.response.status)
+          toast.error("Customer Not Added")
+        });
+      setIsShow(false);
+      setIsAdded(true);
+    }
+  };
   //logout
   const logout = () => {
     dispatch(authActions.logout());
@@ -113,13 +138,12 @@ const Dashboard = () => {
   const newCustomer = (id: any) => {
     if (id === undefined) {
       setIsShow((current) => !current);
-      setModalTitle("New Customer");
-      setModalButton("Save");
       setCustomerForUpdate(undefined);
     } else {
-      let customerForEdit = selected_customer.find(
+      let customerForEdit = selected_customer?.find(
         (item: any) => item.id === id
       );
+      console.log(customerForEdit);
       if (customerForEdit) {
         setCustomerForUpdate({ ...customerForEdit });
         setIsShow(true);
@@ -131,13 +155,7 @@ const Dashboard = () => {
     setShowDelete((current) => !current);
     setDeleteId(id);
   };
-  //Updata modal call and set customer name and id in modal title
-  const handleUpdate = (id: number, fname: string, lname: string) => {
-    setShowUpdate((current) => !current);
-    setModalTitle(`Update Customer "${fname} ${lname}"`);
-    setModalButton("Update");
-    setUpdateId(id);
-  };
+  //DELETE API
   const handleDeleteSubmit = () => {
     if (deleteId) {
       axios
@@ -155,6 +173,34 @@ const Dashboard = () => {
         });
     }
   };
+  //* API to filter (type & status) & (search) customers
+  useEffect(() => {
+    console.log("FILTERED CUSTOMERS .............;;;;");
+    axios
+      .post("api/customers/find", {
+        queryParams: {
+          filter: {
+            firstName: search,
+            lastName: search,
+            email: search,
+            ipAddress: search,
+            status: status,
+            type: type,
+          },
+          pageNumber: page,
+          pageSize: recordsPerPage,
+        },
+      })
+      .then((response) => {
+        const data = response.data.entities;
+        setFilteredCustomers(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [search, type, status, isUpdate, isDeleted, isAdded, customers.length]);
+  //*Search API END
+
   return (
     <>
       <div className="container">
@@ -377,14 +423,11 @@ const Dashboard = () => {
       {isShow && (
         <CustomerModal
           show={isShow} //to show new customer modal
-          modaltitle={modalTitle} //to show modal title "New Customer"
-          modalbutton={modalButton} //to show save in modal button
-          onHide={() => {
-            setIsShow(false);
-          }} //for close button on modal
+          onHide={() => setIsShow(false)} //for close button on modal
           setIsAdded={() => setIsAdded(true)}
           isAdded={isAdded}
           customerForUpdate={customerForUpdate}
+          handleCustomer={handleCustomer}
         />
       )}
       {/* To call Delete Modal */}
@@ -392,26 +435,10 @@ const Dashboard = () => {
         <DeleteCustomer
           show={showDelete} //to show delete modal
           deleteid={deleteId} //customer ID that is to be deleted
-          onHide={() => {
-            setShowDelete(false);
-          }} //for close button
+          onHide={() => setShowDelete(false)} //for close button
           handleSubmit={handleDeleteSubmit}
           isDeleted={isDeleted}
           setIsDeleted={() => setIsDeleted((current) => !current)}
-        />
-      )}
-      {/* To call Update Modal */}
-      {showUpdate && (
-        <CustomerModal
-          show={showUpdate} //to show modal
-          updateid={updateId} //customer ID to update
-          modaltitle={modalTitle} //modal title "update customer"
-          modalbutton={modalButton} //to show "update" in button
-          onHide={() => {
-            setShowUpdate(false);
-          }} //for close button modal
-          setIsUpdate={() => setIsUpdate((current) => !current)}
-          isUpdate={isUpdate}
         />
       )}
     </>

@@ -9,13 +9,14 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import TextInput from "../../components/form/textInput";
 import ShowAlert from "../../components/shared/Alert";
+//Form Fields validation
 const validationSchema = Yup.object({
   password: Yup.string().required("Password is required"),
   email: Yup.string().email().required("E-mail is required"),
 });
 const LoginPage = () => {
   //getting value of error from store
-  const { error} = useSelector((state: any)=> state.auth);
+  const { error } = useSelector((state: any) => state.auth);
   //destructuring useForm
   const {
     register,
@@ -26,7 +27,6 @@ const LoginPage = () => {
     resolver: yupResolver(validationSchema),
   });
   const dispatch: AppDispatch = useDispatch();
-
   const onSubmit = handleSubmit((data) => {
     dispatch(authActions.logIn(data.email, data.password));
   });
@@ -42,13 +42,11 @@ const LoginPage = () => {
       <div className="login-form-container">
         <div className="login-notify">
           {/* to show alert, use demo email and password on page load  */}
-          { error === undefined &&
-              <ShowAlert errorAlert={""} variant={"primary"} />
-          }
+          {error === undefined && (
+            <ShowAlert errorAlert={""} variant={"primary"} />
+          )}
           {/* to show error alert */}
-          { error &&
-              <ShowAlert errorAlert={error} variant={"danger"} />
-          }
+          {error && <ShowAlert errorAlert={error} variant={"danger"} />}
         </div>
         <div className="login-form">
           <Form onSubmit={onSubmit}>
@@ -57,9 +55,8 @@ const LoginPage = () => {
                 name="email"
                 type={"email"}
                 register={register}
-                placeholder='Enter E-mail'
-                className={`form-control ${errors.email?.message ? "is-invalid" : "is-valid" }`}
-                errorMessage={errors.email?.message}
+                placeholder="Enter E-mail"
+                errors={errors}
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -67,8 +64,7 @@ const LoginPage = () => {
                 name="password"
                 type={"password"}
                 register={register}
-                className={`form-control ${errors.password ? "is-invalid" : "is-valid" }`}
-                errorMessage={errors["password"]?.message}
+                errors={errors}
               />
             </Form.Group>
             <Button variant="primary" type="submit">

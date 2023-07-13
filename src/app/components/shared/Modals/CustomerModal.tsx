@@ -2,15 +2,24 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "./CustomerModal.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { toast } from "react-hot-toast";
 import TextInput from "../../form/textInput";
+import SelectInput from "../../form/Select";
 
-//YUP Validation Schema
+//options value for gender
+let genders = [
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
+];
+//Options values for Type
+let types = [
+  { value: 0, label: "Indiviual" },
+  { value: 1, label: "Business" },
+];
+//Intial values for react-hook-form
 const initialValues = {
   firstName: "",
   lastName: "",
@@ -18,9 +27,10 @@ const initialValues = {
   email: "",
   dateOfBbirth: "",
   ipAddress: "",
-  gender: "",
+  gender: "female",
   type: 0,
 };
+//YUP Validation Schema
 const schema = Yup.object({
   firstName: Yup.string()
     .required("Firstname is Required")
@@ -47,8 +57,8 @@ const schema = Yup.object({
     .trim(),
   email: Yup.string().email().required("Email is Required").trim(),
   dateOfBbirth: Yup.string()
+    .required("Date of Birth is required!")
     .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/)
-    .required("E-mail is required")
     .trim(),
   ipAddress: Yup.string()
     .required()
@@ -63,37 +73,9 @@ const schema = Yup.object({
 });
 //Component
 function CustomerModal(props: any) {
-  const { customerForUpdate } = props;
-  const [updateData, setUpdateData]: any = useState({});
-  //to get values to update
-  useEffect(() => {
-    if (props.updateid > 0) {
-      axios
-        .get(`api/customers/${props.updateid}`)
-        .then((response) => response.data)
-        .then((data) => setUpdateData(data))
-        .catch((error) => console.log(error));
-    }
-  }, []);
-  //To SHOW pre-filled values
-  useEffect(() => {
-    if (updateData && updateData.id) {
-      const checked_data = {
-        firstname: updateData.firstName,
-        lastname: updateData.lastName,
-        login: updateData.login,
-        email: updateData.email,
-        dob: updateData.dateOfBbirth,
-        ip: updateData.ipAddress,
-        gender: updateData.gender,
-        type: updateData.type,
-      };
-      if (checked_data) {
-        reset(checked_data);
-      }
-    }
-  }, [updateData, props.isUpdate]);
+  const { customerForUpdate, handleCustomer } = props;
   //Destructuring useForm
+  // ** Start
   const {
     register,
     reset,
@@ -103,88 +85,20 @@ function CustomerModal(props: any) {
     defaultValues: initialValues,
     resolver: yupResolver(schema),
   });
-
+  // ** END
   const onSubmit = (data: any) => {
-    // Update Customer
-    if (updateData.id) {
-      axios
-        .put(`api/customers/${props.updateid}`, {
-          ...updateData,
-          firstName: data.firstname,
-          lastName: data.lastname,
-          email: data.email,
-          dob: data.dob,
-          ip: data.ip,
-          gender: data.gender,
-          type: data.type,
-        })
-        .then((response) => {
-          console.log(response);
-          toast.success("Customer Updated Successfuly");
-        })
-        .catch((error) => {
-          if (error.response) {
-            console.log(
-              "Server responded with status code:",
-              error.response.status
-            );
-            console.log("Response data:", error.response.data);
-          } else if (error.request) {
-            console.log("No response received:", error.request);
-          } else {
-            console.log("Error creating request:", error.message);
-          }
-        });
-      setTimeout(() => {
-        props.onHide();
-        props.setIsUpdate(true);
-      }, 500);
-    } else {
-      //adding new customer
-      axios
-        .post("api/customers", {
-          firstName: data.firstname,
-          lastName: data.lastname,
-          email: data.email,
-          dob: data.dob,
-          ip: data.ip,
-          gender: data.gender,
-          type: data.type,
-        })
-        .then((response) => {
-          console.log(response);
-          toast.success("Customer Added Successfuly");
-        })
-        .catch((error) => {
-          if (error.response) {
-            console.log(
-              "Server responded with status code:",
-              error.response.status
-            );
-            console.log("Response data:", error.response.data);
-          } else if (error.request) {
-            console.log("No response received:", error.request);
-          } else {
-            console.log("Error creating request:", error.message);
-          }
-        });
-      setTimeout(() => {
-        props.onHide();
-        props.setIsAdded();
-      }, 400);
-    }
+    handleCustomer(data);
   };
-
+  //Pre-fill input fields
   useEffect(() => {
     if (customerForUpdate) {
       reset({ ...customerForUpdate });
-      console.log("runningUpdate condition");
+      console.log("running Update condition");
     } else {
       reset({ ...initialValues });
       console.log("new creating  condition");
     }
   }, [customerForUpdate]);
-  console.log(customerForUpdate, "customerForUpdate");
   return (
     <>
       <Modal
@@ -195,7 +109,11 @@ function CustomerModal(props: any) {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            {customerForUpdate ? "EDIT" : "NEW"}
+            {customerForUpdate
+              ? `Update Customer "${
+                  customerForUpdate.firstName + " " + customerForUpdate.lastName
+                }"`
+              : "NEW Customer"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="modal-style">
@@ -206,18 +124,11 @@ function CustomerModal(props: any) {
                 <label>Enter First Name</label>
                 <TextInput
                   type="text"
-                  className={`form-control ${
-                    errors.firstName ? "is-invalid" : Object.keys(errors).length ? "is-valid": ""
-                  }`}
                   placeholder="First Name"
                   name={"firstName"}
                   register={register}
+                  errors={errors}
                 />
-                {errors.firstName && (
-                  <div className="invalid-feedback">
-                    {errors.firstName?.message}
-                  </div>
-                )}
               </div>
               {/* --- END--- */}
               {/* Lastname START */}
@@ -225,18 +136,11 @@ function CustomerModal(props: any) {
                 <label>Enter Last Name</label>
                 <TextInput
                   type="text"
-                  className={`form-control ${
-                    errors.lastName ? "is-invalid" : "form-control"
-                  }`}
-                  placeholder="Last Name"
                   name={"lastName"}
+                  placeholder="Last Name"
                   register={register}
+                  errors={errors}
                 />
-                {errors.lastName && (
-                  <div className="invalid-feedback">
-                    {errors.lastName?.message}
-                  </div>
-                )}
               </div>
               {/* --- END--- */}
               {/* Login START */}
@@ -244,18 +148,11 @@ function CustomerModal(props: any) {
                 <label>Enter Login</label>
                 <TextInput
                   type="text"
-                  className={`form-control ${
-                    errors.login ? "is-invalid" : "form-control"
-                  }`}
                   placeholder="0000"
                   name={"login"}
                   register={register}
+                  errors={errors}
                 />
-                {errors.login && (
-                  <div className="invalid-feedback">
-                    {errors.login?.message}
-                  </div>
-                )}
               </div>
               {/* --- END--- */}
               {/* Email START */}
@@ -263,18 +160,11 @@ function CustomerModal(props: any) {
                 <label>Enter Email</label>
                 <TextInput
                   type="text"
-                  className={`form-control ${
-                    errors.email ? "is-invalid" : "form-control"
-                  }`}
                   placeholder="demo@demo.com"
                   name={"email"}
                   register={register}
+                  errors={errors}
                 />
-                {errors.email && (
-                  <div className="invalid-feedback">
-                    {errors.email?.message}
-                  </div>
-                )}
               </div>
               {/* --- END--- */}
               {/* Date of Birth Start */}
@@ -282,16 +172,16 @@ function CustomerModal(props: any) {
                 <label>Date of Birth</label>
                 <TextInput
                   type="text"
-                  className={`form-control ${
-                    errors.dateOfBbirth ? "is-invalid" : "form-control"
-                  }`}
                   placeholder="12/19/2020"
                   name={"dateOfBbirth"}
                   register={register}
+                  errors={errors}
                 />
-                <p>
-                  Please Enter <b>Date of Birth</b> in 'mm/dd/yyyy' format
-                </p>
+                {!errors.dateOfBbirth && (
+                  <p>
+                    Please Enter <b>Date of Birth</b> in 'mm/dd/yyyy' format
+                  </p>
+                )}
               </div>
               {/* --- END --- */}
               {/* IP Address START */}
@@ -299,28 +189,25 @@ function CustomerModal(props: any) {
                 <label>Enter IP Address</label>
                 <TextInput
                   type="text"
-                  className={`form-control ${
-                    errors.ipAddress ? "is-invalid" : "form-control"
-                  }`}
                   placeholder="127.0.0.1"
                   name={"ipAddress"}
                   register={register}
+                  errors={errors}
                 />
-                <p>We'ill never share customer IP Address with anyone else</p>
+                {!errors.ipAddress && (
+                  <p>We'ill never share customer IP Address with anyone else</p>
+                )}
               </div>
               {/* --- END --- */}
               {/* Gender Start */}
               <div className="grid-item">
                 <label>Select Gender</label>
-                <select
-                  defaultValue={"Female"}
-                  {...register("gender")}
-                  className="form-select"
+                <SelectInput
+                  name="gender"
+                  register={register}
+                  options={genders}
                   style={{ backgroundColor: "#f4f6f9" }}
-                >
-                  <option value={"Male"}>Male</option>
-                  <option value={"Female"}>Female</option>
-                </select>
+                />
                 <p>
                   Please select <b>Gender</b>
                 </p>
@@ -329,15 +216,12 @@ function CustomerModal(props: any) {
               {/* Type START */}
               <div className="grid-item">
                 <label>Select Type</label>
-                <select
-                  defaultValue={0}
-                  {...register("type")}
-                  className="form-select"
+                <SelectInput
+                  name="type"
+                  register={register}
+                  options={types}
                   style={{ backgroundColor: "#f4f6f9" }}
-                >
-                  <option value={0}>Indiviual</option>
-                  <option value={1}>Business</option>
-                </select>
+                />
                 <p>
                   Please select <b>Type</b>
                 </p>
