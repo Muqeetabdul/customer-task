@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
 import { UseFormRegister, FieldValues } from "react-hook-form";
-import Select from "react-select";
 
 export interface SelectInputProps {
   name?: string;
@@ -11,13 +9,15 @@ export interface SelectInputProps {
   defaultValue?: any;
   options?: any[];
   style?: any;
+  onChange?: any;
 }
 
-const SelectByValue = ({
+const SelectInput = ({
   name,
   register,
   options,
   style,
+  onChange,
 }: SelectInputProps) => {
   return (
     <>
@@ -25,6 +25,7 @@ const SelectByValue = ({
         name={name}
         className="form-select"
         {...register(name)}
+        onChange={onChange}
         style={style}
       >
         {options?.map((item: any, index: any) => {
@@ -39,4 +40,4 @@ const SelectByValue = ({
   );
 };
 
-export default SelectByValue;
+export default SelectInput;

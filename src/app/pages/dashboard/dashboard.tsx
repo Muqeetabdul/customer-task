@@ -12,8 +12,7 @@ import { customers } from "../../redux/_mocks_/mockData/customerTableMock";
 //Customer TYPEs
 import { Customer } from "../../redux/_mocks_/mockTypes/cutomer";
 import * as authActions from "../../redux/auth/authActions";
-import Dropdown from "react-bootstrap/Dropdown";
-import Table from "react-bootstrap/Table";
+import { Dropdown, Table } from "react-bootstrap";
 //Modal to ADD/UPDATE Customers
 import CustomerModal from "../../components/shared/Modals/CustomerModal";
 //Modal to DELETE Customers
@@ -21,14 +20,19 @@ import DeleteCustomer from "../../components/shared/Modals/DeleteModal";
 import axios from "axios";
 import "./dashboard.scss";
 import { Toaster, toast } from "react-hot-toast";
+import SelectInput from "../../components/form/Select";
+import {
+  createCustomer,
+  updateCustomer,
+  deleteCustomer,
+} from "../../redux/cutomer/customersAPI";
 
 const Dashboard = () => {
-  <Toaster />;
   const dispatch: AppDispatch = useDispatch();
   //to show no of rows in dashboard footer
   const total_Rows = customers.length;
   //Selected Rows
-  const [selectedRows, setSelectedRows] = useState(3);
+  const [selectedRows, setSelectedRows] = useState(1);
   //States for pagination
   //* Start
   const [page, setPage] = useState(1);
@@ -36,16 +40,18 @@ const Dashboard = () => {
   const firstIndex = (page - 1) * recordsPerPage;
   const lastIndex = page * recordsPerPage;
   const total_No_Of_Pages = Math.ceil(customers.length / recordsPerPage);
-  const [totalPages, setTotalPages] = useState(total_No_Of_Pages);
+  // const [totalPages, setTotalPages] = useState(total_No_Of_Pages);
+  // console.log(totalPages, "TOTAL PAGES -===---")
   //* END
   //States for search criteria
   const [search, setSearch] = useState("");
   const [type, setType] = useState<number | undefined>();
   const [status, setStatus] = useState<number | undefined>();
   //after all search criteria fullfiled, filtered customers array return
-  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>();
+  // const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>(customers);
   //Customers to show on each page
-  const selected_customer = filteredCustomers?.slice(firstIndex, lastIndex);
+  const Customers_List = customers?.slice(firstIndex, lastIndex);
+  console.log(Customers_List, "CUSTOMERS LIST ---------------------------");
   //to call Customer Modal
   const [isShow, setIsShow] = useState(false);
   //Store loggedIn user value
@@ -60,6 +66,14 @@ const Dashboard = () => {
   const [isAdded, setIsAdded] = useState(false);
   const [customerForUpdate, setCustomerForUpdate] = useState<any>();
   //*END
+  //Showing Rows Options Array
+  let rows: any[] = [
+    { value: 1, label: 1 },
+    { value: 2, label: 2 },
+    { value: 3, label: 3 },
+    { value: 4, label: 4 },
+    { value: 5, label: 5 },
+  ];
   //To change no of rows of Customers according to selected rows
   useEffect(() => {
     setrecordsPerPage(selectedRows);
@@ -73,61 +87,31 @@ const Dashboard = () => {
   //To handle Add/Update Customers logics
   const handleCustomer = (data: any) => {
     // Update Customer
-    if (customerForUpdate) {
-      axios
-        .put(`api/customers/${customerForUpdate.id}`, {
-          ...customerForUpdate,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          dateOfBbirth: data.dateOfBbirth,
-          ipAddress: data.ipAddress,
-          gender: data.gender,
-          type: data.type,
-        })
+    if (data.id) {
+      updateCustomer(data)
         .then((response) => {
           console.log(response);
-          toast.success("Customer Updated Successfuly");
+          toast.success(`Customer "${data.firstName + ' ' + data.lastName}" Updated Successfuly`);
+          // setIsUpdate(true);
+          setIsShow(false);
         })
         .catch((error) => {
-          console.log("Customer Not Updated $$$$$$$$$$");
-          if (error.response) {
-            console.log(
-              "Server responded with status code:",
-              error.response.status
-            );
-            console.log("Response data:", error.response.data);
-          } else if (error.request) {
-            console.log("No response received:", error.request);
-          } else {
-            console.log("Error creating request:", error.message);
-          }
+          console.log(error);
+          toast.error("Customer Not Updated");
         });
-      setIsShow(false);
-      setIsUpdate(true);
     } else {
       //adding new customer
-      axios
-        .post("api/customers", {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          dateOfBbirth: data.dateOfBbirth,
-          ipAddress: data.ipAddress,
-          gender: data.gender,
-          type: data.type,
-        })
+      createCustomer(data)
         .then((response) => {
           console.log(response);
-          console.log("Customer Added ==============");
           toast.success("Customer Added Successfuly");
+          // setIsAdded(true);
         })
         .catch((error) => {
-          console.log(error.response.request, error.response.status)
-          toast.error("Customer Not Added")
+          console.log(error);
+          toast.error("Customer Not Added");
         });
       setIsShow(false);
-      setIsAdded(true);
     }
   };
   //logout
@@ -140,10 +124,7 @@ const Dashboard = () => {
       setIsShow((current) => !current);
       setCustomerForUpdate(undefined);
     } else {
-      let customerForEdit = selected_customer?.find(
-        (item: any) => item.id === id
-      );
-      console.log(customerForEdit);
+      let customerForEdit = Customers_List?.find((item: any) => item.id === id);
       if (customerForEdit) {
         setCustomerForUpdate({ ...customerForEdit });
         setIsShow(true);
@@ -158,8 +139,7 @@ const Dashboard = () => {
   //DELETE API
   const handleDeleteSubmit = () => {
     if (deleteId) {
-      axios
-        .delete(`api/customers/${deleteId}`)
+      deleteCustomer(deleteId)
         .then((response) => {
           console.log("DELETED");
           setShowDelete(false);
@@ -169,36 +149,36 @@ const Dashboard = () => {
         })
         .catch((error) => {
           setShowDelete(false);
-          toast.error("Unable To Deleted");
+          toast.error("Unable To Delete");
         });
     }
   };
   //* API to filter (type & status) & (search) customers
-  useEffect(() => {
-    console.log("FILTERED CUSTOMERS .............;;;;");
-    axios
-      .post("api/customers/find", {
-        queryParams: {
-          filter: {
-            firstName: search,
-            lastName: search,
-            email: search,
-            ipAddress: search,
-            status: status,
-            type: type,
-          },
-          pageNumber: page,
-          pageSize: recordsPerPage,
-        },
-      })
-      .then((response) => {
-        const data = response.data.entities;
-        setFilteredCustomers(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [search, type, status, isUpdate, isDeleted, isAdded, customers.length]);
+  // useEffect(() => {
+  //   console.log("FILTERED CUSTOMERS .............;;;;");
+  //   axios
+  //     .post("api/customers/find", {
+  //       queryParams: {
+  //         filter: {
+  //           firstName: search,
+  //           lastName: search,
+  //           email: search,
+  //           ipAddress: search,
+  //           status: status,
+  //           type: type,
+  //         },
+  //         pageNumber: page,
+  //         pageSize: total_No_Of_Pages,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       const data = response.data.entities;
+  //       setFilteredCustomers(data);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // }, [search, type, status, isUpdate, isDeleted, isAdded, customers.length]);
   //*Search API END
 
   return (
@@ -321,7 +301,7 @@ const Dashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {selected_customer?.map((data, index) => (
+                    {Customers_List?.map((data, index) => (
                       <tr key={index}>
                         <td>
                           <input type={"checkbox"}></input>
@@ -332,11 +312,15 @@ const Dashboard = () => {
                         <td aria-label="Email">{data?.email}</td>
                         <td aria-label="Gender">{data?.gender}</td>
                         <td aria-label="Status">
-                          {data?.status ? (
+                          {data?.status === 1 && (
                             <button className="status-suspended">
                               Suspended
                             </button>
-                          ) : (
+                          )}
+                          {data?.status === 2 && (
+                            <button className="status-pending">Pending</button>
+                          )}
+                          {data?.status === 0 && (
                             <button className="status-active">Active</button>
                           )}
                         </td>
@@ -347,14 +331,7 @@ const Dashboard = () => {
                           <div className="icon">
                             <div className="icon-style">
                               <BiEdit
-                                onClick={
-                                  () => newCustomer(data.id)
-                                  // handleUpdate(
-                                  //   data.id,
-                                  //   data.firstName,
-                                  //   data.lastName
-                                  // )
-                                }
+                                onClick={() => newCustomer(data.id)}
                                 style={{
                                   color: "#3699fe",
                                   width: "25px",
@@ -385,29 +362,23 @@ const Dashboard = () => {
               <div className="pagination">
                 <PaginationControl
                   page={page}
-                  total={totalPages}
+                  total={total_No_Of_Pages}
                   limit={1}
                   changePage={(newPage: any) => setPage(newPage)}
-                  ellipsis={4}
+                  ellipsis={3}
                 />
               </div>
               <div className="showing-rows">
-                <select
+                <SelectInput
+                  options={rows}
+                  register={() => {}}
                   onChange={(e: any) => setSelectedRows(e.target.value)}
-                  value={selectedRows}
-                  className="form-select"
                   style={{
                     backgroundColor: "#f4f6f9",
                     width: "85px",
                     border: "none",
                   }}
-                >
-                  <option value={1}>1</option>
-                  <option value={2}>2</option>
-                  <option value={3}>3</option>
-                  <option value={4}>4</option>
-                  <option value={5}>5</option>
-                </select>
+                />
                 <p>
                   Showing rows {selectedRows} to 5 of {total_Rows}
                 </p>
@@ -426,8 +397,8 @@ const Dashboard = () => {
           onHide={() => setIsShow(false)} //for close button on modal
           setIsAdded={() => setIsAdded(true)}
           isAdded={isAdded}
-          customerForUpdate={customerForUpdate}
-          handleCustomer={handleCustomer}
+          customerforupdate={customerForUpdate}
+          handlecustomer={handleCustomer}
         />
       )}
       {/* To call Delete Modal */}

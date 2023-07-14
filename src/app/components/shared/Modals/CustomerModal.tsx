@@ -1,5 +1,4 @@
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
+import { Button, Modal } from "react-bootstrap";
 import "./CustomerModal.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect } from "react";
@@ -73,7 +72,7 @@ const schema = Yup.object({
 });
 //Component
 function CustomerModal(props: any) {
-  const { customerForUpdate, handleCustomer } = props;
+  const { customerforupdate, handlecustomer } = props;
   //Destructuring useForm
   // ** Start
   const {
@@ -87,18 +86,16 @@ function CustomerModal(props: any) {
   });
   // ** END
   const onSubmit = (data: any) => {
-    handleCustomer(data);
+    handlecustomer(data);
   };
   //Pre-fill input fields
   useEffect(() => {
-    if (customerForUpdate) {
-      reset({ ...customerForUpdate });
-      console.log("running Update condition");
+    if (customerforupdate) {
+      reset({ ...customerforupdate });
     } else {
       reset({ ...initialValues });
-      console.log("new creating  condition");
     }
-  }, [customerForUpdate]);
+  }, [customerforupdate]);
   return (
     <>
       <Modal
@@ -109,9 +106,9 @@ function CustomerModal(props: any) {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            {customerForUpdate
+            {customerforupdate
               ? `Update Customer "${
-                  customerForUpdate.firstName + " " + customerForUpdate.lastName
+                  customerforupdate.firstName + " " + customerforupdate.lastName
                 }"`
               : "NEW Customer"}
           </Modal.Title>
@@ -248,7 +245,7 @@ function CustomerModal(props: any) {
             type="submit"
             onClick={handleSubmit(onSubmit)}
           >
-            {customerForUpdate ? "UPDATE" : "CREATE"}
+            {customerforupdate ? "UPDATE" : "CREATE"}
           </Button>
         </Modal.Footer>
       </Modal>

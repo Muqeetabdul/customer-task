@@ -5,7 +5,7 @@ import { Customer } from "../mockTypes";
 
 export default function mockCustomer(mock: MockAdapter) {
   mock.onPost("api/customers").reply(({ data }) => {
-    const customer = JSON.parse(data);
+    const { customer } = JSON.parse(data);
     const {
       firstName = "",
       lastName = "",
@@ -80,8 +80,7 @@ export default function mockCustomer(mock: MockAdapter) {
   mock.onPut(/api\/customers\/\d+/).reply((config) => {
     if (config?.url) {
       const id = config.url.match(/api\/customers\/(\d+)/)![1];
-      const customer = JSON.parse(config.data);
-      // console.log(" @@@ PUT ", customer)
+      const { customer } = JSON.parse(config.data);
       const index = customers.findIndex((el) => el.id === +id);
       if (index < 0) {
         return [400];
@@ -110,10 +109,10 @@ export default function mockCustomer(mock: MockAdapter) {
 }
 
 function generateUserId() {
-  if (customers.length === 0) {
-    return 1; // Return 1 as the initial ID if the customers array is empty
-  }
-  const ids = customers.map((el) => el.id);
-  const maxId = Math.max(...ids);
-  return maxId + 1;
+  // if (customers.length === 0) {
+  //   return 1; // Return 1 as the initial ID if the customers array is empty
+  // }
+  // const ids = customers.map((el) => el.id);
+  // const maxId = Math.max(...ids);
+  return customers.length + 1;
 }

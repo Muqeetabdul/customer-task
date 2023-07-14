@@ -5,12 +5,12 @@ export default function mockAuth(mock: MockAdapter) {
     const requestData = JSON.parse(data.data);
     const loginRequest = requestData.loginRequest;
     if (!loginRequest || !loginRequest.email || !loginRequest.password) {
-      return [400, { error: "The login details is incorrect" }];
+      return [400, { error: "The login details are incorrect" }];
     }
     if (loginRequest.email === "admin@demo.com" && loginRequest.password === "demo") {
       return [200, { id: 1, email: loginRequest.email, token: "USER_LOGGED_IN", username: "Jhon Doe" }];
     } else {
-      return [401, { error: "The login details is incorrect" }];
+      return [401, { error: "The login details are incorrect" }];
     }
   });
   mock.onGet("api/who-am-i").reply((config) => {
