@@ -10,8 +10,8 @@ import SelectInput from "../../form/Select";
 
 //options value for gender
 let genders = [
-  { value: "male", label: "Male" },
-  { value: "female", label: "Female" },
+  { value: "Male", label: "Male" },
+  { value: "Female", label: "Female" },
 ];
 //Options values for Type
 let types = [
@@ -26,7 +26,7 @@ const initialValues = {
   email: "",
   dateOfBbirth: "",
   ipAddress: "",
-  gender: "female",
+  gender: "Female",
   type: 0,
 };
 //YUP Validation Schema

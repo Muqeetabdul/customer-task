@@ -12,31 +12,25 @@ import { customers } from "../../redux/_mocks_/mockData/customerTableMock";
 //Customer TYPEs
 import { Customer } from "../../redux/_mocks_/mockTypes/cutomer";
 import * as authActions from "../../redux/auth/authActions";
+import * as customerActions from "../../redux/cutomer/customerActions";
 import { Dropdown, Table } from "react-bootstrap";
 //Modal to ADD/UPDATE Customers
 import CustomerModal from "../../components/shared/Modals/CustomerModal";
 //Modal to DELETE Customers
 import DeleteCustomer from "../../components/shared/Modals/DeleteModal";
-import axios from "axios";
 import "./dashboard.scss";
-import { Toaster, toast } from "react-hot-toast";
 import SelectInput from "../../components/form/Select";
-import {
-  createCustomer,
-  updateCustomer,
-  deleteCustomer,
-} from "../../redux/cutomer/customersAPI";
 
 const Dashboard = () => {
   const dispatch: AppDispatch = useDispatch();
-  //to show no of rows in dashboard footer
+  //to show no of rows in dashboard footer (Rows select)
   const total_Rows = customers.length;
-  //Selected Rows
-  const [selectedRows, setSelectedRows] = useState(1);
+  //Selected Rows (No. of rows to show per page)
+  const [selectedRows, setSelectedRows] = useState(3);
   //States for pagination
   //* Start
   const [page, setPage] = useState(1);
-  const [recordsPerPage, setrecordsPerPage] = useState(1);
+  const [recordsPerPage, setrecordsPerPage] = useState(3);
   const firstIndex = (page - 1) * recordsPerPage;
   const lastIndex = page * recordsPerPage;
   const total_No_Of_Pages = Math.ceil(customers.length / recordsPerPage);
@@ -49,13 +43,13 @@ const Dashboard = () => {
   const [status, setStatus] = useState<number | undefined>();
   //after all search criteria fullfiled, filtered customers array return
   // const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>(customers);
-  //Customers to show on each page
-  const Customers_List = customers?.slice(firstIndex, lastIndex);
-  console.log(Customers_List, "CUSTOMERS LIST ---------------------------");
   //to call Customer Modal
   const [isShow, setIsShow] = useState(false);
   //Store loggedIn user value
   const { user } = useSelector((state: any) => state.auth);
+  const { customer } = useSelector((state: any) => state.customer);
+  //Customers to show on each page
+  const Customers_List = customers?.slice(firstIndex, lastIndex);
   //to call Delete Modal
   const [showDelete, setShowDelete] = useState<boolean>(false);
   const [deleteId, setDeleteId] = useState<number | undefined>(0);
@@ -74,50 +68,43 @@ const Dashboard = () => {
     { value: 4, label: 4 },
     { value: 5, label: 5 },
   ];
+
+  let types: any[] = [
+    { value: undefined, label: "All" },
+    { value: 0, label: "Indiviual" },
+    { value: 1, label: "Business" },
+  ];
+
   //To change no of rows of Customers according to selected rows
   useEffect(() => {
     setrecordsPerPage(selectedRows);
   }, [selectedRows]);
+
   //To show only (one record per page) & (total no of pages) in mobile view
   useEffect(() => {
     if (window.screen.width <= 600) {
       setrecordsPerPage(1);
     }
   }, []);
+
   //To handle Add/Update Customers logics
   const handleCustomer = (data: any) => {
     // Update Customer
     if (data.id) {
-      updateCustomer(data)
-        .then((response) => {
-          console.log(response);
-          toast.success(`Customer "${data.firstName + ' ' + data.lastName}" Updated Successfuly`);
-          // setIsUpdate(true);
-          setIsShow(false);
-        })
-        .catch((error) => {
-          console.log(error);
-          toast.error("Customer Not Updated");
-        });
+      dispatch(customerActions.customerUpdate(data));
+      setIsShow(false);
     } else {
       //adding new customer
-      createCustomer(data)
-        .then((response) => {
-          console.log(response);
-          toast.success("Customer Added Successfuly");
-          // setIsAdded(true);
-        })
-        .catch((error) => {
-          console.log(error);
-          toast.error("Customer Not Added");
-        });
+      dispatch(customerActions.customerAdd(data));
       setIsShow(false);
     }
   };
+
   //logout
   const logout = () => {
     dispatch(authActions.logout());
   };
+
   //to call modal for new customer and modal title
   const newCustomer = (id: any) => {
     if (id === undefined) {
@@ -131,55 +118,37 @@ const Dashboard = () => {
       }
     }
   };
+
   //call delete modal and set delete id
   const handleDelete = (id: any) => {
     setShowDelete((current) => !current);
     setDeleteId(id);
   };
+
   //DELETE API
   const handleDeleteSubmit = () => {
     if (deleteId) {
-      deleteCustomer(deleteId)
-        .then((response) => {
-          console.log("DELETED");
-          setShowDelete(false);
-          toast.error("Customer Deleted");
-          setDeleteId(undefined);
-          setIsDeleted(true);
-        })
-        .catch((error) => {
-          setShowDelete(false);
-          toast.error("Unable To Delete");
-        });
+      dispatch(customerActions.customerDelete(deleteId));
+      setShowDelete(false);
+      setDeleteId(undefined);
     }
   };
-  //* API to filter (type & status) & (search) customers
-  // useEffect(() => {
-  //   console.log("FILTERED CUSTOMERS .............;;;;");
-  //   axios
-  //     .post("api/customers/find", {
-  //       queryParams: {
-  //         filter: {
-  //           firstName: search,
-  //           lastName: search,
-  //           email: search,
-  //           ipAddress: search,
-  //           status: status,
-  //           type: type,
-  //         },
-  //         pageNumber: page,
-  //         pageSize: total_No_Of_Pages,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       const data = response.data.entities;
-  //       setFilteredCustomers(data);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // }, [search, type, status, isUpdate, isDeleted, isAdded, customers.length]);
-  //*Search API END
+
+  useEffect(() => {
+    const queryParams = {
+      filter: {
+        firstName: search,
+        lastName: search,
+        email: search,
+        ipAddress: search,
+        status: status,
+        type: type,
+      },
+      pageNumber: page,
+      pageSize: total_No_Of_Pages,
+    };
+    dispatch(customerActions.customerFind(queryParams));
+  }, [search, type, status]);
 
   return (
     <>
@@ -245,6 +214,7 @@ const Dashboard = () => {
                 </p>
               </div>
               <div className="filter-by-type">
+                {/* <SelectInput register={() => { }} options={types} style={{width: '170px', height: '45px'}} /> */}
                 <Dropdown>
                   <Dropdown.Toggle
                     className="dropdown-style"
@@ -301,7 +271,7 @@ const Dashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {Customers_List?.map((data, index) => (
+                    {Customers_List?.map((data: any, index: any) => (
                       <tr key={index}>
                         <td>
                           <input type={"checkbox"}></input>
@@ -378,6 +348,8 @@ const Dashboard = () => {
                     width: "85px",
                     border: "none",
                   }}
+                  value={selectedRows}
+                  defaultValue={3}
                 />
                 <p>
                   Showing rows {selectedRows} to 5 of {total_Rows}

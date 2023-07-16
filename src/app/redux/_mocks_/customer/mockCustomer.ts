@@ -32,8 +32,7 @@ export default function mockCustomer(mock: MockAdapter) {
       type,
     };
     customers.push(newCustomer);
-    // localStorage.setItem(`${id}`, JSON.stringify(newCustomer));
-    return [200, { customer: newCustomer }];
+    return [200, newCustomer];
   });
 
   mock.onPost("api/customers/find").reply((config) => {
@@ -68,6 +67,7 @@ export default function mockCustomer(mock: MockAdapter) {
     if (config?.url) {
       const id = config.url.match(/api\/customers\/(\d+)/)![1];
       const customer = customers.find((el) => el.id === +id);
+      console.log(customer, "API GET CUSTOMER -------------------")
       if (!customer) {
         return [400];
       }
@@ -87,7 +87,7 @@ export default function mockCustomer(mock: MockAdapter) {
       }
 
       customers[index] = { ...customer };
-      return [200];
+      return [200, customer];
     } else {
       return [500, { error: "An unknown error occured" }];
     }
@@ -109,10 +109,10 @@ export default function mockCustomer(mock: MockAdapter) {
 }
 
 function generateUserId() {
-  // if (customers.length === 0) {
-  //   return 1; // Return 1 as the initial ID if the customers array is empty
-  // }
-  // const ids = customers.map((el) => el.id);
-  // const maxId = Math.max(...ids);
-  return customers.length + 1;
+  if (customers.length === 0) {
+    return 1; // Return 1 as the initial ID if the customers array is empty
+  }
+  const ids = customers.map((el) => el.id);
+  const maxId = Math.max(...ids);
+  return maxId + 1;
 }

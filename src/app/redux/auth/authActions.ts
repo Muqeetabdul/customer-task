@@ -16,6 +16,7 @@ export const logIn =
     return serverRequest
       .logIn(loginRequest)
       .then((response) => {
+        console.log(response,'response ==============')
         const loginData: Login = {
           user: {
             id: response.data.id,
@@ -35,6 +36,7 @@ export const logIn =
         toast.error(error.response.data.error);
       });
   };
+  
 export const Who_Am_i = () => (dispatch: AppDispatch) => {
   dispatch(actions.startCall);
   return serverRequest

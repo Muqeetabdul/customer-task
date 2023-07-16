@@ -2,11 +2,11 @@ import { UseFormRegister, FieldValues } from "react-hook-form";
 
 export interface SelectInputProps {
   name?: string;
-  values?: string | any;
+  value?: string | any;
   register: UseFormRegister<FieldValues> | any;
   option?: string | any;
   index?: number;
-  defaultValue?: any;
+  defaultValue?: string | any;
   options?: any[];
   style?: any;
   onChange?: any;
@@ -18,6 +18,8 @@ const SelectInput = ({
   options,
   style,
   onChange,
+  value,
+  defaultValue,
 }: SelectInputProps) => {
   return (
     <>
@@ -27,6 +29,7 @@ const SelectInput = ({
         {...register(name)}
         onChange={onChange}
         style={style}
+        value={value || defaultValue}
       >
         {options?.map((item: any, index: any) => {
           return (
