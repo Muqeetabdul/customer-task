@@ -31,7 +31,9 @@ export default function mockCustomer(mock: MockAdapter) {
       ipAddress,
       type,
     };
-    customers.push(newCustomer);
+    //Redux makes customers array frozen
+    const updated_Customers_Array = [...customers, newCustomer];
+    // customers.push(newCustomer);
     return [200, newCustomer];
   });
 
@@ -86,8 +88,14 @@ export default function mockCustomer(mock: MockAdapter) {
         return [400];
       }
 
-      customers[index] = { ...customer };
-      return [200, customer];
+      const updatedCustomer = { ...customer };
+      const updatedCustomers = [ ...customers ];
+
+      updatedCustomers[index] = updatedCustomer;
+      return [200, updatedCustomer];
+
+      // customers[index] = { ...customer };
+      // return [200, customer];
     } else {
       return [500, { error: "An unknown error occured" }];
     }
@@ -97,7 +105,9 @@ export default function mockCustomer(mock: MockAdapter) {
     if (config?.url) {
       const id = config.url.match(/api\/customers\/(\d+)/)![1];
       const index = customers.findIndex((el) => el.id === +id);
-      customers.splice(index, 1);
+      const filterdCustomers = customers.filter((customer) => customer.id !== +id);
+      customers = filterdCustomers;
+      // customers.splice(index, 1);
       if (index < 0) {
         return [400];
       }

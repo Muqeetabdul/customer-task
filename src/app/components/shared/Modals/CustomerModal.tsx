@@ -57,7 +57,7 @@ const schema = Yup.object({
   email: Yup.string().email().required("Email is Required").trim(),
   dateOfBbirth: Yup.string()
     .required("Date of Birth is required!")
-    .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/)
+    .matches(/^(0?[1-9]|1[0-2])\/(0?[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/)
     .trim(),
   ipAddress: Yup.string()
     .required()
@@ -114,7 +114,7 @@ function CustomerModal(props: any) {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="modal-style">
-          <form className="form-group" noValidate>
+          <form className="form-group" autoComplete="on" noValidate>
             <div className="form-container">
               {/* Firstname START */}
               <div className="grid-item">

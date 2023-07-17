@@ -8,7 +8,7 @@ import { MdDeleteOutline } from "react-icons/md";
 //Pagination
 import { PaginationControl } from "react-bootstrap-pagination-control";
 //Customers Array
-import { customers } from "../../redux/_mocks_/mockData/customerTableMock";
+// import { customers } from "../../redux/_mocks_/mockData/customerTableMock";
 //Customer TYPEs
 import { Customer } from "../../redux/_mocks_/mockTypes/cutomer";
 import * as authActions from "../../redux/auth/authActions";
@@ -23,6 +23,7 @@ import SelectInput from "../../components/form/Select";
 
 const Dashboard = () => {
   const dispatch: AppDispatch = useDispatch();
+  const { customers } = useSelector((state: any) => state.customer);
   //to show no of rows in dashboard footer (Rows select)
   const total_Rows = customers.length;
   //Selected Rows (No. of rows to show per page)
@@ -47,7 +48,7 @@ const Dashboard = () => {
   const [isShow, setIsShow] = useState(false);
   //Store loggedIn user value
   const { user } = useSelector((state: any) => state.auth);
-  const { customer } = useSelector((state: any) => state.customer);
+  
   //Customers to show on each page
   const Customers_List = customers?.slice(firstIndex, lastIndex);
   //to call Delete Modal
@@ -55,7 +56,7 @@ const Dashboard = () => {
   const [deleteId, setDeleteId] = useState<number | undefined>(0);
   //to re-render filtered customers array whenever any customer updated/Added/Deleted
   //*Start
-  const [isUpdate, setIsUpdate] = useState(false);
+  // const [isUpdate, setIsUpdate] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [customerForUpdate, setCustomerForUpdate] = useState<any>();
@@ -91,6 +92,7 @@ const Dashboard = () => {
   const handleCustomer = (data: any) => {
     // Update Customer
     if (data.id) {
+      console.log(data.id, 'DATA ID FROM DASHBOARD -=-=-=-------------------')
       dispatch(customerActions.customerUpdate(data));
       setIsShow(false);
     } else {
@@ -147,7 +149,7 @@ const Dashboard = () => {
       pageNumber: page,
       pageSize: total_No_Of_Pages,
     };
-    dispatch(customerActions.customerFind(queryParams));
+    // dispatch(customerActions.customerFind(queryParams));
   }, [search, type, status]);
 
   return (
