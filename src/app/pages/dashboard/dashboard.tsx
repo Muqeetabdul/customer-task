@@ -1,25 +1,16 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../redux/store";
-//Update ICON
 import { BiEdit } from "react-icons/bi";
-//Delete ICON
 import { MdDeleteOutline } from "react-icons/md";
-//Pagination
 import { PaginationControl } from "react-bootstrap-pagination-control";
-//Customers Array
-// import { customers } from "../../redux/_mocks_/mockData/customerTableMock";
-//Customer TYPEs
-import { Customer } from "../../redux/_mocks_/mockTypes/cutomer";
+import { Dropdown, Table } from "react-bootstrap";
 import * as authActions from "../../redux/auth/authActions";
 import * as customerActions from "../../redux/cutomer/customerActions";
-import { Dropdown, Table } from "react-bootstrap";
-//Modal to ADD/UPDATE Customers
 import CustomerModal from "../../components/shared/Modals/CustomerModal";
-//Modal to DELETE Customers
 import DeleteCustomer from "../../components/shared/Modals/DeleteModal";
-import "./dashboard.scss";
 import SelectInput from "../../components/form/Select";
+import "./dashboard.scss";
 
 const Dashboard = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -48,7 +39,6 @@ const Dashboard = () => {
   const [isShow, setIsShow] = useState(false);
   //Store loggedIn user value
   const { user } = useSelector((state: any) => state.auth);
-  
   //Customers to show on each page
   const Customers_List = customers?.slice(firstIndex, lastIndex);
   //to call Delete Modal
@@ -92,7 +82,6 @@ const Dashboard = () => {
   const handleCustomer = (data: any) => {
     // Update Customer
     if (data.id) {
-      console.log(data.id, 'DATA ID FROM DASHBOARD -=-=-=-------------------')
       dispatch(customerActions.customerUpdate(data));
       setIsShow(false);
     } else {
@@ -149,9 +138,8 @@ const Dashboard = () => {
       pageNumber: page,
       pageSize: total_No_Of_Pages,
     };
-    // dispatch(customerActions.customerFind(queryParams));
+    dispatch(customerActions.customerFind(queryParams));
   }, [search, type, status]);
-
   return (
     <>
       <div className="container">
@@ -216,10 +204,11 @@ const Dashboard = () => {
                 </p>
               </div>
               <div className="filter-by-type">
-                {/* <SelectInput register={() => { }} options={types} style={{width: '170px', height: '45px'}} /> */}
-                <Dropdown>
+                <SelectInput register={() => { }} options={types} style={{width: '170px', height: '45px'}} 
+                  />
+                {/* <Dropdown>
                   <Dropdown.Toggle
-                    className="dropdown-style"
+                    className="dropdown-style"s
                     variant="success"
                     id="dropdown-basic"
                   >
@@ -238,7 +227,7 @@ const Dashboard = () => {
                       Indiviual
                     </Dropdown.Item>
                   </Dropdown.Menu>
-                </Dropdown>
+                </Dropdown> */}
                 <p>
                   <span>Filter</span> by Type
                 </p>

@@ -33,7 +33,7 @@ export function updateStatusForCustomers(ids: number[], status: number) {
     ids,
     status,
   });
-}     
+}
 
 // DELETE => delete the customer from the server
 export function deleteCustomer(customerId: number) {

@@ -10,6 +10,7 @@ export interface SelectInputProps {
   options?: any[];
   style?: any;
   onChange?: any;
+  optionsStyle?: any;
 }
 
 const SelectInput = ({
@@ -20,6 +21,7 @@ const SelectInput = ({
   onChange,
   value,
   defaultValue,
+  optionsStyle,
 }: SelectInputProps) => {
   return (
     <>
@@ -33,7 +35,7 @@ const SelectInput = ({
       >
         {options?.map((item: any, index: any) => {
           return (
-            <option key={index} value={item?.value}>
+            <option key={index} value={item?.value} style={optionsStyle}>
               {item?.label}
             </option>
           );

@@ -129,6 +129,10 @@ $font-family: "arial";
   margin-left: 2%;
   flex-direction: column;
   align-items: flex-start;
+  option{
+    background-color: #6a6b6b;
+    color: white;
+  }
   p {
     color: #b9b9c6;
   }
@@ -138,12 +142,6 @@ $font-family: "arial";
 }
 .filter-by-type {
   @extend .filter-by-status;
-  p {
-    color: #b9b9c6;
-  }
-  p > span {
-    font-weight: bold;
-  }
 }
 .filter-search {
   @extend .filter-by-status;
@@ -156,12 +154,6 @@ $font-family: "arial";
   }
   > input:focus {
     outline-color: #5a9bec;
-  }
-  > P {
-    color: #b9b9c6;
-  }
-  p > span {
-    font-weight: bold;
   }
 }
 .customer-content-table {

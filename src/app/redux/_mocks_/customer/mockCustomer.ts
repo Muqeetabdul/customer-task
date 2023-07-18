@@ -31,16 +31,19 @@ export default function mockCustomer(mock: MockAdapter) {
       ipAddress,
       type,
     };
-    //Redux makes customers array frozen
-    const updated_Customers_Array = [...customers, newCustomer];
+    const dublicateArray = [...customers];
+    dublicateArray.push(newCustomer);
     // customers.push(newCustomer);
-    return [200, newCustomer];
+    return [200, dublicateArray];
   });
 
   mock.onPost("api/customers/find").reply((config) => {
     const mockUtils = new MockUtils();
     const { queryParams } = JSON.parse(config.data);
-    const filterdCustomers = mockUtils.baseFilter(customers, queryParams);
+    const copy_customers = [ ...customers ];
+    console.log(copy_customers, 'Copy_customers -----------------------')
+    const filterdCustomers = mockUtils.baseFilter(copy_customers, queryParams);
+    console.log(filterdCustomers, 'filtered Customers ----------------')
     return [200, filterdCustomers];
   });
 
@@ -69,7 +72,7 @@ export default function mockCustomer(mock: MockAdapter) {
     if (config?.url) {
       const id = config.url.match(/api\/customers\/(\d+)/)![1];
       const customer = customers.find((el) => el.id === +id);
-      console.log(customer, "API GET CUSTOMER -------------------")
+      console.log(customer, "API GET CUSTOMER -------------------");
       if (!customer) {
         return [400];
       }
@@ -79,23 +82,19 @@ export default function mockCustomer(mock: MockAdapter) {
     }
   });
 
+  //Update Customer
   mock.onPut(/api\/customers\/\d+/).reply((config) => {
     if (config?.url) {
       const id = config.url.match(/api\/customers\/(\d+)/)![1];
       const { customer } = JSON.parse(config.data);
-      const index = customers.findIndex((el) => el.id === +id);
+      const index = customers.findIndex((el: any) => el.id === +id);
       if (index < 0) {
-        return [400];
+        return [200, [...customers, customer]];
       }
 
-      const updatedCustomer = { ...customer };
-      const updatedCustomers = [ ...customers ];
-
-      updatedCustomers[index] = updatedCustomer;
-      return [200, updatedCustomer];
-
-      // customers[index] = { ...customer };
-      // return [200, customer];
+      let dublicate = [...customers];
+      dublicate[index] = { ...customer };
+      return [200, dublicate];
     } else {
       return [500, { error: "An unknown error occured" }];
     }
@@ -105,13 +104,18 @@ export default function mockCustomer(mock: MockAdapter) {
     if (config?.url) {
       const id = config.url.match(/api\/customers\/(\d+)/)![1];
       const index = customers.findIndex((el) => el.id === +id);
-      const filterdCustomers = customers.filter((customer) => customer.id !== +id);
-      customers = filterdCustomers;
+      // const filterdCustomers = customers.filter(
+      //   (customer) => customer.id !== +id
+      // );
+      // const After_Delete_Customers = [...filterdCustomers];
+      const duplicate_customers = [...customers];
+      duplicate_customers.splice(index, 1);
+      // customers = filterdCustomers;
       // customers.splice(index, 1);
       if (index < 0) {
-        return [400];
+        return [200, [...customers]];
       }
-      return [200];
+      return [200, duplicate_customers];
     } else {
       return [500, { error: "An unknown error occured" }];
     }

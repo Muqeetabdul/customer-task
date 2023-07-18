@@ -28,16 +28,16 @@ export default class MockUtils {
 
     // Paginator
     // start
-    const pageNumber = _queryParams.pageNumber - 1;
+    // const pageNumber = _queryParams.pageNumber - 1;
     const totalCount = entitiesResult.length;
-    const initialPos = pageNumber * _queryParams.pageSize;
-    entitiesResult = entitiesResult.slice(
-      initialPos,
-      initialPos + _queryParams.pageSize
-    );
+    // const initialPos = pageNumber * _queryParams.pageSize;
+    // entitiesResult = entitiesResult.slice(
+    //   initialPos,
+    //   initialPos + _queryParams.pageSize
+    // );
     // end
     const queryResults = {
-      entities: entitiesResult,
+      entities: entitiesResult, 
       totalCount: totalCount,
       errorMessage: ""
     };
