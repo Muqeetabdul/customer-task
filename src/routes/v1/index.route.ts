@@ -1,6 +1,7 @@
 import express from 'express';
 import authRoute from './auth.route';
 import userRoute from './user.route';
+import customerRoute from './customer.route'
 import docsRoute from './docs.route';
 import config from '../../config/config';
 
@@ -15,6 +16,11 @@ const defaultRoutes = [
     path: '/users',
     route: userRoute,
   },
+  {
+    path: '/customers',
+    route: customerRoute,
+  }
+
 ];
 
 const devRoutes = [
