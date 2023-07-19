@@ -17,5 +17,5 @@ const validate = (schema: Schema | object) => (req: Request, res: Response, next
   }
   Object.assign(req, value);
   return next();
-};
+};    
 export default validate;

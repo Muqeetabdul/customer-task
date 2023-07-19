@@ -14,4 +14,5 @@ interface UserModel extends Model<UserDocument> {
   paginate(filter: any, options: any): any;
 }
 
-export { UserModel, UserDocument };
+export { UserModel, UserDocument };   
+     

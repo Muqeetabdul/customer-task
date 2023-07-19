@@ -14,8 +14,8 @@ import router from './routes/v1/index.route';
 import { errorConverter, errorHandlers } from './middlewares/error.middleware';
 import ApiError from './utils/ApiError';
 
-const app: Application = express();
-if (config.env !== 'test') {
+const app: Application = express();      
+if (config.env !== 'test') {     
   app.use(successHandler);
   app.use(errorHandler);
 }

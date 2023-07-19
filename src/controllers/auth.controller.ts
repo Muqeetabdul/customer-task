@@ -7,7 +7,7 @@ import { UserDocument } from '../interfaces/user.interface';
 const register = catchAsync(async (req: Request, res: Response): Promise<void> => {
   const user = await userService.createUser(req.body);
   const tokens = await tokenService.generateAuthTokens(user);
-  res.status(httpStatus.CREATED).send({ user, tokens });
+  res.status(httpStatus.CREATED).send({ user, tokens });    
 });
 
 const login = catchAsync(async (req: Request, res: Response): Promise<void> => {

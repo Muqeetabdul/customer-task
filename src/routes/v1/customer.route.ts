@@ -12,7 +12,7 @@ router.route('/')
 // router.post('/update', validate(customerValidation.updateCustomer), customerController.updateCustomer);
 // .delete(validate(customerValidation.deleteCustomer), customerController.deleteCustomer)
 
-export default router;
+export default router;    
 
 /**
  * @swagger

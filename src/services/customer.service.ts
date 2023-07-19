@@ -22,7 +22,7 @@ export const deleteCustomerById = async (customerId: ObjectId): Promise<Customer
     const customer = await getCustomerById(customerId);
     if (!customer) {
         console.log("NO SUCH CUSTOMER AVAILABLE...")
-    }
+    }     
     await (customer as any).remove();
     return customer;
 }

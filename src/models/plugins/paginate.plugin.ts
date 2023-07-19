@@ -20,10 +20,10 @@ export const paginate = (schema: Object) => {
    * @param {number} [options.page] - Current page (default = 1)
    * @returns {Promise<QueryResult>}
    */
-  // @ts-ignore
+  // @ts-ignore     
   schema.statics.paginate = async function (filter: Object, options) {
     let sort = '';
-    if (options.sortBy) {
+    if (options.sortBy) {    
       // @ts-ignore
       const sortingCriteria = [];
       // @ts-ignore

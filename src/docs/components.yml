@@ -6,7 +6,7 @@ components:
         id:
           type: string
         email:
-          type: string
+          type: string    
           format: email
         name:
           type: string

@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema<UserDocument, UserModel>(
         }
       },
       private: true, // used by the toJSON plugin
-    },
+    },    
     role: {
       type: String,
       enum: roles,

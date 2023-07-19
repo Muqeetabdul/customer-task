@@ -16,7 +16,7 @@ const customerSchema = new mongoose.Schema<CustomerDocument, CustomerModel>(
       minlength: 3,
       maxlength: 45,
     },
-    lastName: {
+    lastName: {     
       type: String,
       required: true,
       trim: true,

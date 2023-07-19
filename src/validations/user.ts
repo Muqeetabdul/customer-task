@@ -8,7 +8,7 @@ const createUser = {
     name: Joi.string().required(),
     role: Joi.string().required().valid('user', 'admin'),
   }),
-};
+};       
 
 const getUsers = {
   query: Joi.object().keys({

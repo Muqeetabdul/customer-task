@@ -24,7 +24,7 @@
     "prepare": "husky install"
   },
   "keywords": [
-    "node",
+    "node",        
     "node.js",
     "boilerplate",
     "generator",

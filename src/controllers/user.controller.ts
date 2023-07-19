@@ -6,7 +6,7 @@ import catchAsync from '../utils/catchAsync';
 import { userService } from '../services/index.service';
 
 const createUser = catchAsync(async (req: Request, res: Response): Promise<void> => {
-  const user = await userService.createUser(req.body);
+  const user = await userService.createUser(req.body);    
   res.status(httpStatus.CREATED).send(user);
 });
 

@@ -10,9 +10,9 @@ import { ObjectId } from 'mongoose';
 import { TokenDocument } from '../interfaces/token.interface';
 import { UserDocument } from '../interfaces/user.interface';
 
-// Generate token
+// Generate token   
 export const generateToken = (
-  userId: ObjectId,
+  userId: ObjectId,     
   expires: Moment,
   type: string,
   secret: string = config.jwt.secret

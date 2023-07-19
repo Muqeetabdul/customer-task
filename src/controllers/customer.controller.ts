@@ -12,7 +12,7 @@ const createCustomer = catchAsync(async (req: Request, res: Response): Promise<v
 const getCustomerById = catchAsync(async (req: Request, res: Response): Promise<void> => {
     const customer = await customerService.getCustomerById(req.body);
     console.log(req.body, "CUSTOMER BY ID");
-    res.status(httpStatus.FOUND).send(customer);
+    res.status(httpStatus.FOUND).send(customer);    
 });
 
 export { createCustomer, getCustomerById };

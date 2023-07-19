@@ -9,7 +9,7 @@
 // @ts-ignore
 const deleteAtPath = (obj, path, index) => {
   if (index === path.length - 1) {
-    delete obj[path[index]];
+    delete obj[path[index]];        
     return;
   }
   deleteAtPath(obj[path[index]], path, index + 1);

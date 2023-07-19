@@ -26,7 +26,7 @@ const sendResetPasswordEmail = async (to: string, token: string): Promise<void> 
 To reset your password, click on this link: ${resetPasswordUrl}
 If you did not request any password resets, then ignore this email.`;
   await sendEmail(to, subject, text);
-};
+};       
 
 // Send verification email
 const sendVerificationEmail = async (to: string, token: string): Promise<void> => {

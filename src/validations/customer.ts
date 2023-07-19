@@ -9,10 +9,10 @@ const createCustomer = {
     dateOfBirth: Joi.string().required().trim(),
     ipAddress: Joi.string().required().trim(),
     status: Joi.string().optional(),
-    gender: Joi.string().optional(),
+    gender: Joi.string().optional(),   
     type: Joi.string().optional(),
-  }),
-};
+  }),    
+};    
 
 const updateCustomer = {
   params: Joi.object().keys({

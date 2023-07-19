@@ -45,9 +45,9 @@ export const updateUserById = async (userId: ObjectId, updateBody: { [k: string]
   if (updateBody.email && User.isEmailTaken(updateBody.email, userId)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
-  Object.assign(user as any, updateBody as any);
-  await (user as any).save();
-  return user;
+  Object.assign(user as any, updateBody as any);   
+  await (user as any).save();   
+  return user;   
 };
 
 // Delete user by id

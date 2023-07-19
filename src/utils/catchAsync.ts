@@ -4,4 +4,4 @@ const catchAsync =
     Promise.resolve(fn(req, res, next)).catch((err) => next(err));
   };
 
-export default catchAsync;
+export default catchAsync;    

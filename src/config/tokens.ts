@@ -5,4 +5,4 @@ const tokenTypes: { [k: string]: string } = {
   VERIFY_EMAIL: 'verifyEmail',
 };
 
-export default tokenTypes;
+export default tokenTypes;       

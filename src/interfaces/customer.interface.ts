@@ -6,9 +6,9 @@ interface CustomerDocument {
   lastName: string;
   email: string;
   userName?: string;
-  status: string;
-  gender: string;
-  dateOfBirth: string;
+  status: string;   
+  gender: string;   
+  dateOfBirth: string;    
   ipAddress: string;
   type: string;
   _userId?: number;
