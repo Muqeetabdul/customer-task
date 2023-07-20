@@ -7,10 +7,14 @@ import * as customerController from '../../controllers/customer.controller';
 const router = express.Router();
 
 router.route('/')
-.get(validate({}), customerController.getCustomerById)
 .post(validate(customerValidation.createCustomer), customerController.createCustomer)
-// router.post('/update', validate(customerValidation.updateCustomer), customerController.updateCustomer);
-// .delete(validate(customerValidation.deleteCustomer), customerController.deleteCustomer)
+.get(validate(customerValidation.getAllCustomers), customerController.getAllCustomers);
+
+router.route('/:customerId')
+.get(validate(customerValidation.getCustomer), customerController.getCustomerById)
+.patch(validate(customerValidation.updateCustomer), customerController.updateCustomerById)
+.delete(validate(customerValidation.deleteCustomer), customerController.deleteCustomer);
+
 
 export default router;    
 
@@ -76,41 +80,11 @@ export default router;
  *         $ref: '#/components/responses/Forbidden'
  *
  *   get:
- *     summary: Get all users
- *     description: Only admins can retrieve all users.
- *     tags: [Users]
+ *     summary: Get all Customers
+ *     description: Only admins can retrieve all Customers.
+ *     tags: [Customers]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: name
- *         schema:
- *           type: string
- *         description: User name
- *       - in: query
- *         name: role
- *         schema:
- *           type: string
- *         description: User role
- *       - in: query
- *         name: sortBy
- *         schema:
- *           type: string
- *         description: sort by query in the form of field:desc/asc (ex. name:asc)
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           minimum: 1
- *         default: 10
- *         description: Maximum number of users
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           minimum: 1
- *           default: 1
- *         description: Page number
  *     responses:
  *       "200":
  *         description: OK
@@ -146,7 +120,7 @@ export default router;
  * /customers/{id}:
  *   get:
  *     summary: Get a customer
- *     description: Logged in users can fetch only their own user information. Only admins can fetch other users.
+ *     description: Only admins can fetch other Customers.
  *     tags: [Customers]
  *     security:
  *       - bearerAuth: []
@@ -156,14 +130,14 @@ export default router;
  *         required: true
  *         schema:
  *           type: string
- *         description: User id
+ *         description: Customer id
  *     responses:
  *       "200":
  *         description: OK
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
+ *                $ref: '#/components/schemas/customer'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
@@ -172,9 +146,9 @@ export default router;
  *         $ref: '#/components/responses/NotFound'
  *
  *   patch:
- *     summary: Update a user
- *     description: Logged in users can only update their own information. Only admins can update other users.
- *     tags: [Users]
+ *     summary: Update a customer
+ *     description: Only admins can update customers.
+ *     tags: [Customers]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -183,7 +157,7 @@ export default router;
  *         required: true
  *         schema:
  *           type: string
- *         description: User id
+ *         description: Customer id
  *     requestBody:
  *       required: true
  *       content:
@@ -191,21 +165,24 @@ export default router;
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               firstName:
+ *                 type: string
+ *               lastName:
  *                 type: string
  *               email:
  *                 type: string
  *                 format: email
  *                 description: must be unique
- *               password:
+ *               dateOfBirth:
  *                 type: string
- *                 format: password
- *                 minLength: 8
- *                 description: At least one number and one letter
+ *               ipAddress:
+ *                 type: string
  *             example:
- *               name: fake name
+ *               firstName: fake name
+ *               lastName: fake name
  *               email: fake@example.com
- *               password: password1
+ *               dateOfBirth: Month/Day/Year
+ *               ipAddress: 127.0.0.1
  *     responses:
  *       "200":
  *         description: OK
@@ -223,9 +200,9 @@ export default router;
  *         $ref: '#/components/responses/NotFound'
  *
  *   delete:
- *     summary: Delete a user
- *     description: Logged in users can delete only themselves. Only admins can delete other users.
- *     tags: [Users]
+ *     summary: Delete a customer
+ *     description: Only admins can delete customers.
+ *     tags: [Customers]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -234,7 +211,7 @@ export default router;
  *         required: true
  *         schema:
  *           type: string
- *         description: User id
+ *         description: Customer id
  *     responses:
  *       "200":
  *         description: No content

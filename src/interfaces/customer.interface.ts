@@ -6,7 +6,7 @@ interface CustomerDocument {
   lastName: string;
   email: string;
   userName?: string;
-  status: string;   
+  status: string;     
   gender: string;   
   dateOfBirth: string;    
   ipAddress: string;

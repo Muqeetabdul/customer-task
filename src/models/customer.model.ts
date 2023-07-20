@@ -6,7 +6,6 @@ import {
 } from "../interfaces/customer.interface";
 import { toJSON } from "./plugins/toJSON.plugin";
 import { paginate } from "./plugins/paginate.plugin";
-
 const customerSchema = new mongoose.Schema<CustomerDocument, CustomerModel>(
   {
     firstName: {
@@ -16,7 +15,7 @@ const customerSchema = new mongoose.Schema<CustomerDocument, CustomerModel>(
       minlength: 3,
       maxlength: 45,
     },
-    lastName: {     
+    lastName: {
       type: String,
       required: true,
       trim: true,
@@ -63,7 +62,7 @@ const customerSchema = new mongoose.Schema<CustomerDocument, CustomerModel>(
     type: {
       type: String,
       required: false,
-      trim: true,
+      trim: false,
     },
   },
   {

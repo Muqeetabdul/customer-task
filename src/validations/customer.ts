@@ -14,6 +14,25 @@ const createCustomer = {
   }),    
 };    
 
+const getAllCustomers = {
+  query: Joi.object().keys({
+    firstName: Joi.string(),
+    lastName: Joi.string(),
+    email: Joi.string(),
+    dateOfBirth: Joi.string(),
+    ipAddress: Joi.string(),
+    status: Joi.string(),
+    gender: Joi.string(),   
+    type: Joi.string(),
+  }),
+}
+
+const getCustomer = {
+  params: Joi.object().keys({
+    customerId: Joi.string().custom(objectId),
+  }),
+};
+
 const updateCustomer = {
   params: Joi.object().keys({
     customerId: Joi.required().custom(objectId),
@@ -27,7 +46,7 @@ const updateCustomer = {
       ipAddress: Joi.string().required().trim(),
       status: Joi.string().optional(),
       gender: Joi.string().optional(),
-      type: Joi.string().required(),
+      type: Joi.string().optional(),
     })
     .min(1),
 };
@@ -38,4 +57,4 @@ const deleteCustomer = {
   }),
 };
 
-export { createCustomer, updateCustomer, deleteCustomer };
+export { createCustomer, getAllCustomers, getCustomer, updateCustomer, deleteCustomer };
