@@ -13,7 +13,7 @@ import { BrowserRouter } from "react-router-dom";
 
 const container = document.getElementById("root")!;
 const root = createRoot(container);
-axiosInitializer.mockAxios(axios);
+// axiosInitializer.mockAxios(axios);
 axiosInitializer.setupAxios({axios,store});
 
 root.render(

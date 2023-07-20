@@ -9,12 +9,12 @@ const { actions } = authSlice;
 export const logIn =
   (email: string, password: string) => (dispatch: AppDispatch) => {
     dispatch(actions.startCall);
-    const loginRequest: LoginRequest = {
-      email,
-      password,
-    };
+    // const loginRequest: LoginRequest = {
+    //   email,
+    //   password,
+    // };
     return serverRequest
-      .logIn(loginRequest)
+      .logIn({email, password})
       .then((response) => {
         console.log(response,'response ==============')
         const loginData: Login = {

@@ -5,9 +5,20 @@ import {
   updateCustomer,
   deleteCustomer,
   findCustomers,
+  getAllCustomers,
 } from "./customersAPI";
 import { toast } from "react-hot-toast";
 const { actions } = customerSlice;
+
+export const allCustomers = (data: any) => (dispatch: AppDispatch) => {
+  getAllCustomers()
+    .then((response) => {
+      console.log({ response });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 
 export const customerAdd = (data: any) => (dispatch: AppDispatch) => {
   createCustomer(data)
@@ -46,7 +57,7 @@ export const customerDelete = (id: any) => (dispatch: AppDispatch) => {
       toast.error("Customer Deleted");
     })
     .catch((error) => {
-      console.log(error.response)
+      console.log(error.response);
       toast.error("Unable To Delete");
     });
 };

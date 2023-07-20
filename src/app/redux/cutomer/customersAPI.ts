@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Customer, CustomerFilter } from "../_mocks_/mockTypes";
-export const CUSTOMERS_URL = "api/customers";
+export const CUSTOMERS_URL ="http://localhost:3001/v1/customers/";
 
 // CREATE =>  POST: add a new customer to the server
 export function createCustomer(customer: Customer) {
@@ -19,7 +19,8 @@ export function getCustomerById(customerId: number) {
 // Method from server should return QueryResultsModel(items: any[], totalsCount: number)
 // items => filtered/sorted result
 export function findCustomers(queryParams: CustomerFilter) {
-  return axios.post(`${CUSTOMERS_URL}/find`, { queryParams });
+  console.log("get customers")
+  return axios.post(`${CUSTOMERS_URL}/`, { queryParams });
 }
 
 // UPDATE => PUT: update the customer on the server

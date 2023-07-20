@@ -11,10 +11,12 @@ import CustomerModal from "../../components/shared/Modals/CustomerModal";
 import DeleteCustomer from "../../components/shared/Modals/DeleteModal";
 import SelectInput from "../../components/form/Select";
 import "./dashboard.scss";
+import axios from 'axios';
 
 const Dashboard = () => {
   const dispatch: AppDispatch = useDispatch();
   const { customers } = useSelector((state: any) => state.customer);
+  console.log(customers, 'CUSTOMERS ARRAY ----------')
   //to show no of rows in dashboard footer (Rows select)
   const total_Rows = customers.length;
   //Selected Rows (No. of rows to show per page)
@@ -51,6 +53,7 @@ const Dashboard = () => {
   const [isAdded, setIsAdded] = useState(false);
   const [customerForUpdate, setCustomerForUpdate] = useState<any>();
   //*END
+  const [Backend_Customers_List, setBackend_Customers_List] = useState([]);
   //Showing Rows Options Array
   let rows: any[] = [
     { value: 1, label: 1 },
@@ -138,8 +141,23 @@ const Dashboard = () => {
       pageNumber: page,
       pageSize: total_No_Of_Pages,
     };
-    dispatch(customerActions.customerFind(queryParams));
+
+    // dispatch(customerActions.customerFind(queryParams));
   }, [search, type, status]);
+
+ 
+  // const getAllData = async () => {
+  //   console.log("IN GETDATA ----------------")
+  //   const response = await fetch('http://localhost:3001/v1/customers/');
+  //   console.log('after response line -----------------------')
+  //   console.log(response, 'RESPONSE =================')
+  //   setBackend_Customers_List(response.data);
+  // }
+
+  // useEffect(()=>  getAllData(),[])
+
+
+
   return (
     <>
       <div className="container">
@@ -204,11 +222,10 @@ const Dashboard = () => {
                 </p>
               </div>
               <div className="filter-by-type">
-                <SelectInput register={() => { }} options={types} style={{width: '170px', height: '45px'}} 
-                  />
-                {/* <Dropdown>
+                {/* <SelectInput register={() => { }} options={types} style={{width: '170px', height: '45px'}} /> */}
+                <Dropdown>
                   <Dropdown.Toggle
-                    className="dropdown-style"s
+                    className="dropdown-style"
                     variant="success"
                     id="dropdown-basic"
                   >
@@ -227,7 +244,7 @@ const Dashboard = () => {
                       Indiviual
                     </Dropdown.Item>
                   </Dropdown.Menu>
-                </Dropdown> */}
+                </Dropdown>
                 <p>
                   <span>Filter</span> by Type
                 </p>
