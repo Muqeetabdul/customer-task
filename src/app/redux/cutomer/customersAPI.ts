@@ -1,15 +1,15 @@
 import axios from "axios";
 import { Customer, CustomerFilter } from "../_mocks_/mockTypes";
-export const CUSTOMERS_URL ="http://localhost:3001/v1/customers/";
+export const CUSTOMERS_URL = "http://localhost:3001/v1/customers";
 
 // CREATE =>  POST: add a new customer to the server
 export function createCustomer(customer: Customer) {
-  return axios.post(CUSTOMERS_URL, { customer });
+  return axios.post(CUSTOMERS_URL, customer);
 }
 
 // READ
 export function getAllCustomers() {
-  return axios.get(CUSTOMERS_URL);
+  return axios.get(`${CUSTOMERS_URL}/`);
 }
 
 export function getCustomerById(customerId: number) {
@@ -19,13 +19,14 @@ export function getCustomerById(customerId: number) {
 // Method from server should return QueryResultsModel(items: any[], totalsCount: number)
 // items => filtered/sorted result
 export function findCustomers(queryParams: CustomerFilter) {
-  console.log("get customers")
+  console.log("get customers");
   return axios.post(`${CUSTOMERS_URL}/`, { queryParams });
 }
 
 // UPDATE => PUT: update the customer on the server
 export function updateCustomer(customer: Customer) {
-  return axios.put(`${CUSTOMERS_URL}/${customer.id}`, { customer });
+  console.log(customer, "customer --------------------");
+  return axios.patch(`${CUSTOMERS_URL}/${customer.id}`, customer);
 }
 
 // UPDATE Status

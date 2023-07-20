@@ -23,7 +23,7 @@ const LoginPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    defaultValues: { email: "admin@demo.com", password: "demo" },
+    defaultValues: { email: "admin@demo.com", password: "demo1234" },
     resolver: yupResolver(validationSchema),
   });
   const dispatch: AppDispatch = useDispatch();

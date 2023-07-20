@@ -10,10 +10,11 @@ import {
 import { toast } from "react-hot-toast";
 const { actions } = customerSlice;
 
-export const allCustomers = (data: any) => (dispatch: AppDispatch) => {
+export const allCustomers = () => (dispatch: AppDispatch) => {
   getAllCustomers()
     .then((response) => {
-      console.log({ response });
+      console.log(response);
+      dispatch(actions.allCustomers(response.data));
     })
     .catch((error) => {
       console.log(error);
@@ -24,7 +25,8 @@ export const customerAdd = (data: any) => (dispatch: AppDispatch) => {
   createCustomer(data)
     .then((response) => {
       console.log(response);
-      dispatch(actions.getAllCustomers(response.data));
+      dispatch(actions.customerAdd(response.data));
+      dispatch(allCustomers());
       toast.success("Customer Added Successfuly");
     })
     .catch((error) => {
@@ -36,9 +38,7 @@ export const customerAdd = (data: any) => (dispatch: AppDispatch) => {
 export const customerUpdate = (data: any) => (dispatch: AppDispatch) => {
   updateCustomer(data)
     .then((response) => {
-      console.log(response, "response");
-      // dispatch(actions.customerUpdate(response.data));
-      dispatch(actions.getAllCustomers(response.data));
+      dispatch(actions.customerUpdate(response.data));
       toast.success(
         `Customer "${data.firstName + " " + data.lastName}" Updated Successfuly`
       );
@@ -52,7 +52,6 @@ export const customerUpdate = (data: any) => (dispatch: AppDispatch) => {
 export const customerDelete = (id: any) => (dispatch: AppDispatch) => {
   deleteCustomer(id)
     .then((response) => {
-      console.log("DELETED");
       dispatch(actions.customerDelete(response.data));
       toast.error("Customer Deleted");
     })

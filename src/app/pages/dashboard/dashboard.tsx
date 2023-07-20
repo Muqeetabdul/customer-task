@@ -11,62 +11,41 @@ import CustomerModal from "../../components/shared/Modals/CustomerModal";
 import DeleteCustomer from "../../components/shared/Modals/DeleteModal";
 import SelectInput from "../../components/form/Select";
 import "./dashboard.scss";
-import axios from 'axios';
 
 const Dashboard = () => {
   const dispatch: AppDispatch = useDispatch();
+
   const { customers } = useSelector((state: any) => state.customer);
-  console.log(customers, 'CUSTOMERS ARRAY ----------')
-  //to show no of rows in dashboard footer (Rows select)
+  console.log(customers, "CUSTOMERS ARRAY ----------");
+
   const total_Rows = customers.length;
-  //Selected Rows (No. of rows to show per page)
   const [selectedRows, setSelectedRows] = useState(3);
-  //States for pagination
-  //* Start
   const [page, setPage] = useState(1);
   const [recordsPerPage, setrecordsPerPage] = useState(3);
   const firstIndex = (page - 1) * recordsPerPage;
   const lastIndex = page * recordsPerPage;
   const total_No_Of_Pages = Math.ceil(customers.length / recordsPerPage);
-  // const [totalPages, setTotalPages] = useState(total_No_Of_Pages);
-  // console.log(totalPages, "TOTAL PAGES -===---")
-  //* END
-  //States for search criteria
   const [search, setSearch] = useState("");
   const [type, setType] = useState<number | undefined>();
   const [status, setStatus] = useState<number | undefined>();
-  //after all search criteria fullfiled, filtered customers array return
-  // const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>(customers);
-  //to call Customer Modal
   const [isShow, setIsShow] = useState(false);
-  //Store loggedIn user value
   const { user } = useSelector((state: any) => state.auth);
-  //Customers to show on each page
-  const Customers_List = customers?.slice(firstIndex, lastIndex);
-  //to call Delete Modal
+
+  // const Customers_List = customers?.slice(firstIndex, lastIndex);
+
   const [showDelete, setShowDelete] = useState<boolean>(false);
   const [deleteId, setDeleteId] = useState<number | undefined>(0);
-  //to re-render filtered customers array whenever any customer updated/Added/Deleted
-  //*Start
-  // const [isUpdate, setIsUpdate] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [customerForUpdate, setCustomerForUpdate] = useState<any>();
-  //*END
   const [Backend_Customers_List, setBackend_Customers_List] = useState([]);
-  //Showing Rows Options Array
+
   let rows: any[] = [
     { value: 1, label: 1 },
     { value: 2, label: 2 },
     { value: 3, label: 3 },
     { value: 4, label: 4 },
     { value: 5, label: 5 },
-  ];
-
-  let types: any[] = [
-    { value: undefined, label: "All" },
-    { value: 0, label: "Indiviual" },
-    { value: 1, label: "Business" },
   ];
 
   //To change no of rows of Customers according to selected rows
@@ -105,7 +84,9 @@ const Dashboard = () => {
       setIsShow((current) => !current);
       setCustomerForUpdate(undefined);
     } else {
-      let customerForEdit = Customers_List?.find((item: any) => item.id === id);
+      let customerForEdit: any = Backend_Customers_List?.find(
+        (item: any) => item.id === id
+      );
       if (customerForEdit) {
         setCustomerForUpdate({ ...customerForEdit });
         setIsShow(true);
@@ -145,18 +126,23 @@ const Dashboard = () => {
     // dispatch(customerActions.customerFind(queryParams));
   }, [search, type, status]);
 
- 
+  /** Fetching customers from backend **/
   // const getAllData = async () => {
-  //   console.log("IN GETDATA ----------------")
-  //   const response = await fetch('http://localhost:3001/v1/customers/');
-  //   console.log('after response line -----------------------')
-  //   console.log(response, 'RESPONSE =================')
-  //   setBackend_Customers_List(response.data);
-  // }
+  //   const response = await fetch("http://localhost:3001/v1/customers/");
+  //   const data = await response.json();
+  //   setBackend_Customers_List(data);
+  //   dispatch(customerActions.allCustomers());
+  // };
 
-  // useEffect(()=>  getAllData(),[])
+  // useEffect(() => {
+  //   getAllData();
+  // }, []);
 
+  useEffect(() => {
+    dispatch(customerActions.allCustomers());
+  }, []);
 
+  /* ******* */
 
   return (
     <>
@@ -279,31 +265,32 @@ const Dashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {Customers_List?.map((data: any, index: any) => (
+                    {customers?.map((data: any, index: any) => (
                       <tr key={index}>
                         <td>
                           <input type={"checkbox"}></input>
                         </td>
-                        <td aria-label="ID">{data?.id}</td>
+                        <td aria-label="ID">{index + 1}</td>
                         <td aria-label="First Name">{data?.firstName}</td>
                         <td aria-label="Last Name">{data?.lastName}</td>
                         <td aria-label="Email">{data?.email}</td>
                         <td aria-label="Gender">{data?.gender}</td>
                         <td aria-label="Status">
-                          {data?.status === 1 && (
+                          {data?.status === "suspended" && (
                             <button className="status-suspended">
                               Suspended
                             </button>
                           )}
-                          {data?.status === 2 && (
+                          {data?.status === "pending" && (
                             <button className="status-pending">Pending</button>
                           )}
-                          {data?.status === 0 && (
+                          {data?.status === "active" && (
                             <button className="status-active">Active</button>
                           )}
                         </td>
                         <td aria-label="Type">
-                          {data?.type == 0 ? "Indiviual" : "Business"}
+                          {data?.type === "Indiviual" && "Indiviual"}
+                          {data?.type === "Business" && "Business"}
                         </td>
                         <td aria-label="Actions">
                           <div className="icon">

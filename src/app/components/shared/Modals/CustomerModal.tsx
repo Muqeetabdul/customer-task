@@ -15,8 +15,8 @@ let genders = [
 ];
 //Options values for Type
 let types = [
-  { value: 0, label: "Indiviual" },
-  { value: 1, label: "Business" },
+  { value: "Indiviual", label: "Indiviual" },
+  { value: "Business", label: "Business" },
 ];
 //Intial values for react-hook-form
 const initialValues = {
@@ -24,10 +24,10 @@ const initialValues = {
   lastName: "",
   login: "",
   email: "",
-  dateOfBbirth: "",
+  dateOfBirth: "",
   ipAddress: "",
   gender: "Female",
-  type: 0,
+  type: "Indiviual",
 };
 //YUP Validation Schema
 const schema = Yup.object({
@@ -55,7 +55,7 @@ const schema = Yup.object({
     .matches(/^(\d{4})$/, { message: "Login must be 4 digits" })
     .trim(),
   email: Yup.string().email().required("Email is Required").trim(),
-  dateOfBbirth: Yup.string()
+  dateOfBirth: Yup.string()
     .required("Date of Birth is required!")
     .matches(/^(0?[1-9]|1[0-2])\/(0?[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/)
     .trim(),
@@ -91,6 +91,7 @@ function CustomerModal(props: any) {
   //Pre-fill input fields
   useEffect(() => {
     if (customerforupdate) {
+      console.log(customerforupdate);
       reset({ ...customerforupdate });
     } else {
       reset({ ...initialValues });
@@ -170,11 +171,11 @@ function CustomerModal(props: any) {
                 <TextInput
                   type="text"
                   placeholder="12/19/2020"
-                  name={"dateOfBbirth"}
+                  name={"dateOfBirth"}
                   register={register}
                   errors={errors}
                 />
-                {!errors.dateOfBbirth && (
+                {!errors.dateOfBirth && (
                   <p>
                     Please Enter <b>Date of Birth</b> in 'mm/dd/yyyy' format
                   </p>

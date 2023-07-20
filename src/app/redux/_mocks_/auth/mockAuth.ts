@@ -25,6 +25,7 @@ export default function mockAuth(mock: MockAdapter) {
     }
   });
   mock.onGet("/v1/auth/who-am-i").reply((config) => {
+    console.log("I am in moch who am i -------------")
     if (config && config.headers) {
       const Authorization = config.headers.Authorization;
       const accessToken =

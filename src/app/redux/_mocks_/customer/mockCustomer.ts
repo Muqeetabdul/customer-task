@@ -126,7 +126,7 @@ function generateUserId() {
   if (customers.length === 0) {
     return 1; // Return 1 as the initial ID if the customers array is empty
   }
-  const ids = customers.map((el) => el.id);
+  const ids = customers?.map((el) => el.id);
   const maxId = Math.max(...ids);
   return maxId + 1;
 }
