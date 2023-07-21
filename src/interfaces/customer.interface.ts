@@ -1,17 +1,17 @@
 import { Model, ObjectId } from "mongoose";
 
 interface CustomerDocument {
-  id: ObjectId;
+  id?: ObjectId;
   firstName: string;
   lastName: string;
+  login: string;
   email: string;
   userName?: string;
-  status: string;     
-  gender: string;   
-  dateOfBirth: string;    
+  status: string;
+  gender: string;
+  dateOfBirth: string;
   ipAddress: string;
   type: string;
-  _userId?: number;
   _createdDate?: string;
   _updatedDate?: string;
 }

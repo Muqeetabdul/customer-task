@@ -59,12 +59,18 @@ export default router;
  *                 type: string
  *               ipAddress:
  *                 type: string
+ *               status:
+ *                 type: string
+ *               type:
+ *                 type: string
  *             example:
  *               firstName: fake name
  *               lastName: fake name
  *               email: fake@example.com
  *               dateOfBirth: Month/Day/Year
  *               ipAddress: 127.0.0.1
+ *               gender: male
+ *               type: Indiviual
  *     responses:
  *       "201":
  *         description: Created

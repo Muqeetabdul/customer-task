@@ -22,6 +22,13 @@ const customerSchema = new mongoose.Schema<CustomerDocument, CustomerModel>(
       minlength: 3,
       maxlength: 45,
     },
+    login: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 4,
+      maxlength: 4,
+    },
     email: {
       type: String,
       required: true,
