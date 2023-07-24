@@ -1,22 +1,37 @@
-import express from 'express';
-import validate from '../../middlewares/validate.middleware';
-import * as customerValidation from '../../validations/customer';
-import * as customerController from '../../controllers/customer.controller';
-
+import express from "express";
+import validate from "../../middlewares/validate.middleware";
+import * as customerValidation from "../../validations/customer";
+import * as customerController from "../../controllers/customer.controller";
 
 const router = express.Router();
 
-router.route('/')
-.post(validate(customerValidation.createCustomer), customerController.createCustomer)
-.get(validate(customerValidation.getAllCustomers), customerController.getAllCustomers);
+router
+  .route("/")
+  .post(
+    validate(customerValidation.createCustomer),
+    customerController.createCustomer
+  )
+  .get(
+    validate(customerValidation.getAllCustomers),
+    customerController.getAllCustomers
+  );
 
-router.route('/:customerId')
-.get(validate(customerValidation.getCustomer), customerController.getCustomerById)
-.patch(validate(customerValidation.updateCustomer), customerController.updateCustomerById)
-.delete(validate(customerValidation.deleteCustomer), customerController.deleteCustomer);
+router
+  .route("/:customerId")
+  .get(
+    validate(customerValidation.getCustomer),
+    customerController.getCustomerById
+  )
+  .patch(
+    validate(customerValidation.updateCustomer),
+    customerController.updateCustomerById
+  )
+  .delete(
+    validate(customerValidation.deleteCustomer),
+    customerController.deleteCustomer
+  );
 
-
-export default router;    
+export default router;
 
 /**
  * @swagger
@@ -91,6 +106,31 @@ export default router;
  *     tags: [Customers]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: firstName
+ *         schema:
+ *           type: string
+ *         description: Customer name
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *         description: sort by query in the form of field:desc/asc (ex. name:asc)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         default: 10
+ *         description: Maximum number of users
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number
  *     responses:
  *       "200":
  *         description: OK

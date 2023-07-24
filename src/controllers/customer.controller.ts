@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import catchAsync from "../utils/catchAsync";
 import { Request, Response } from "express";
 import { customerService } from "../services/index.service";
+import pick from "../utils/pick";
 
 const createCustomer = catchAsync(
   async (req: Request, res: Response): Promise<void> => {
@@ -13,8 +14,16 @@ const createCustomer = catchAsync(
 
 const getAllCustomers = catchAsync(
   async (req: Request, res: Response): Promise<void> => {
-    const allCustomers = await customerService.getAllCustomers();
-    res.status(httpStatus.OK).send(allCustomers);
+    const filter = pick(req.query, []);
+    const options = pick(req.query, [
+      "type",
+      "status",
+      "search",
+      "limit",
+      "page",
+    ]);
+    const result = await customerService.queryCustomers(filter, options);
+    res.status(httpStatus.OK).send(result);
   }
 );
 

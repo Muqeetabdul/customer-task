@@ -9,7 +9,7 @@ const createCustomer = {
     email: Joi.string().required().trim().lowercase(),
     dateOfBirth: Joi.string().required().trim(),
     ipAddress: Joi.string().required().trim(),
-    status: Joi.string().optional().default("active"),
+    status: Joi.string().optional(),
     gender: Joi.string().optional(),
     type: Joi.string().optional(),
   }),
@@ -17,15 +17,11 @@ const createCustomer = {
 
 const getAllCustomers = {
   query: Joi.object().keys({
-    firstName: Joi.string(),
-    lastName: Joi.string(),
-    email: Joi.string(),
-    login: Joi.string(),
-    dateOfBirth: Joi.string(),
-    ipAddress: Joi.string(),
-    status: Joi.string(),
-    gender: Joi.string(),
-    type: Joi.string(),
+    search: Joi.string().optional(),
+    type: Joi.string().optional(),
+    status: Joi.string().optional(),
+    limit: Joi.number().integer().default(10),
+    page: Joi.number().integer().default(1),
   }),
 };
 

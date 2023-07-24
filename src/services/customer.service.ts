@@ -1,7 +1,8 @@
-import mongoose from "mongoose";
 import { ObjectId } from "mongoose";
 import { CustomerDocument } from "../interfaces/customer.interface";
-import { Customer } from "../models/customer.model";
+import { Customer } from "../models/index.model";
+import ApiError from "../utils/ApiError";
+import httpStatus from "http-status";
 
 //create customer
 export const createCustomer = async (customerBody: {
@@ -10,10 +11,22 @@ export const createCustomer = async (customerBody: {
   return Customer.create(customerBody);
 };
 
+/**
+ * Query for customers
+ * @param {Object} filter - Mongo filter
+ * @param {Object} options - Query options
+ * @param {number} [options.limit] - Maximum number of results per page (default = 3)
+ * @param {number} [options.page] - Current page (default = 1)
+ * @returns {Promise<QueryResult>}
+ */
+
 // GET all customers
-export const getAllCustomers = async (): Promise<CustomerDocument[]> => {
-  const allCustomers = await Customer.find();
-  return allCustomers;
+export const queryCustomers = async (
+  filter: object,
+  options: object
+): Promise<CustomerDocument[]> => {
+  const customers = await Customer.paginate(filter, options);
+  return customers;
 };
 
 // Get customer by ID
@@ -37,6 +50,9 @@ export const updateCustomerById = async (
   updateBody: { [k: string]: any }
 ): Promise<CustomerDocument> => {
   const customer = await getCustomerById(customerId);
+  if (!customer) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Customer not found");
+  }
   Object.assign(customer as any, updateBody as any);
   await (customer as any).save();
   return customer;
@@ -48,7 +64,7 @@ export const deleteCustomerById = async (
 ): Promise<CustomerDocument> => {
   const customer = await getCustomerById(customerId);
   if (!customer) {
-    console.log("NO SUCH CUSTOMER AVAILABLE...");
+    throw new ApiError(httpStatus.NOT_FOUND, "Customer not found");
   }
   await (customer as any).remove();
   return customer;
