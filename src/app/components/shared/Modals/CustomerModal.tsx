@@ -18,6 +18,12 @@ let types = [
   { value: "Indiviual", label: "Indiviual" },
   { value: "Business", label: "Business" },
 ];
+//Options values for Status
+let statuses = [
+  { value: "Active", label: "Active" },
+  { value: "Pending", label: "Pending" },
+  { value: "Suspended", label: "Suspended" },
+];
 //Intial values for react-hook-form
 const initialValues = {
   firstName: "",
@@ -28,6 +34,7 @@ const initialValues = {
   ipAddress: "",
   gender: "Female",
   type: "Indiviual",
+  status: "Active",
 };
 //YUP Validation Schema
 const schema = Yup.object({
@@ -69,6 +76,9 @@ const schema = Yup.object({
       if (value === undefined || value.trim() === "") return true;
       return value.split(".").find((i) => parseInt(i) > 255) === undefined;
     }),
+  status: Yup.string().optional(),
+  type: Yup.string().optional(),
+  gender: Yup.string().optional(),
 });
 //Component
 function CustomerModal(props: any) {
@@ -222,6 +232,20 @@ function CustomerModal(props: any) {
                 />
                 <p>
                   Please select <b>Type</b>
+                </p>
+              </div>
+              {/* --- END --- */}
+              {/* Status START */}
+              <div className="grid-item">
+                <label>Select Status</label>
+                <SelectInput
+                  name="status"
+                  register={register}
+                  options={statuses}
+                  style={{ backgroundColor: "#f4f6f9" }}
+                />
+                <p>
+                  Please select <b>Status</b>
                 </p>
               </div>
               {/* --- END --- */}

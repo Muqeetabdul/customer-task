@@ -14,9 +14,10 @@ import "./dashboard.scss";
 
 const Dashboard = () => {
   const dispatch: AppDispatch = useDispatch();
-
+  const { user } = useSelector((state: any) => state.auth);
   const { customers } = useSelector((state: any) => state.customer);
-  console.log(customers, "CUSTOMERS ARRAY ----------");
+
+  console.log(customers, "CUSTOMERS ARRAY ................");
 
   const total_Rows = customers.length;
   const [selectedRows, setSelectedRows] = useState(3);
@@ -25,20 +26,18 @@ const Dashboard = () => {
   const firstIndex = (page - 1) * recordsPerPage;
   const lastIndex = page * recordsPerPage;
   const total_No_Of_Pages = Math.ceil(customers.length / recordsPerPage);
-  const [search, setSearch] = useState("");
-  const [type, setType] = useState<number | undefined>();
-  const [status, setStatus] = useState<number | undefined>();
+
+  const Customers_List = customers?.slice(firstIndex, lastIndex);
+
+  const [search, setSearch] = useState<string | undefined>("");
+  const [type, setType] = useState<string | undefined>();
+  const [status, setStatus] = useState<string | undefined>();
+
   const [isShow, setIsShow] = useState(false);
-  const { user } = useSelector((state: any) => state.auth);
-
-  // const Customers_List = customers?.slice(firstIndex, lastIndex);
-
   const [showDelete, setShowDelete] = useState<boolean>(false);
   const [deleteId, setDeleteId] = useState<number | undefined>(0);
-  const [isDeleted, setIsDeleted] = useState(false);
-  const [isAdded, setIsAdded] = useState(false);
+
   const [customerForUpdate, setCustomerForUpdate] = useState<any>();
-  const [Backend_Customers_List, setBackend_Customers_List] = useState([]);
 
   let rows: any[] = [
     { value: 1, label: 1 },
@@ -72,19 +71,17 @@ const Dashboard = () => {
       setIsShow(false);
     }
   };
-
-  //logout
   const logout = () => {
     dispatch(authActions.logout());
   };
 
-  //to call modal for new customer and modal title
+  // ** Customer Modal => call
   const newCustomer = (id: any) => {
     if (id === undefined) {
       setIsShow((current) => !current);
       setCustomerForUpdate(undefined);
     } else {
-      let customerForEdit: any = Backend_Customers_List?.find(
+      let customerForEdit: any = Customers_List?.find(
         (item: any) => item.id === id
       );
       if (customerForEdit) {
@@ -94,13 +91,13 @@ const Dashboard = () => {
     }
   };
 
-  //call delete modal and set delete id
+  // ** Delete Modal => Open & set ID
   const handleDelete = (id: any) => {
     setShowDelete((current) => !current);
     setDeleteId(id);
   };
 
-  //DELETE API
+  // ** DELETE API
   const handleDeleteSubmit = () => {
     if (deleteId) {
       dispatch(customerActions.customerDelete(deleteId));
@@ -109,40 +106,18 @@ const Dashboard = () => {
     }
   };
 
+  // ** To get and filter customers
   useEffect(() => {
     const queryParams = {
-      filter: {
-        firstName: search,
-        lastName: search,
-        email: search,
-        ipAddress: search,
-        status: status,
-        type: type,
-      },
+      type: type,
+      status: status,
+      search: search,
+      pageSize: selectedRows,
       pageNumber: page,
-      pageSize: total_No_Of_Pages,
     };
 
-    // dispatch(customerActions.customerFind(queryParams));
-  }, [search, type, status]);
-
-  /** Fetching customers from backend **/
-  // const getAllData = async () => {
-  //   const response = await fetch("http://localhost:3001/v1/customers/");
-  //   const data = await response.json();
-  //   setBackend_Customers_List(data);
-  //   dispatch(customerActions.allCustomers());
-  // };
-
-  // useEffect(() => {
-  //   getAllData();
-  // }, []);
-
-  useEffect(() => {
-    dispatch(customerActions.allCustomers());
-  }, []);
-
-  /* ******* */
+    dispatch(customerActions.getCustomers(queryParams));
+  }, [type, status, search, selectedRows]);
 
   return (
     <>
@@ -184,21 +159,21 @@ const Dashboard = () => {
                     id="dropdown-basic"
                   >
                     {status === undefined && "All"}
-                    {status === 1 && "Suspended"}
-                    {status === 2 && "Pending"}
-                    {status === 0 && "Active"}
+                    {status === "suspended" && "Suspended"}
+                    {status === "pending" && "Pending"}
+                    {status === "active" && "Active"}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item onClick={() => setStatus(undefined)}>
                       All
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => setStatus(1)}>
+                    <Dropdown.Item onClick={() => setStatus("suspended")}>
                       Suspended
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => setStatus(2)}>
+                    <Dropdown.Item onClick={() => setStatus("pending")}>
                       Pending
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => setStatus(0)}>
+                    <Dropdown.Item onClick={() => setStatus("active")}>
                       Active
                     </Dropdown.Item>
                   </Dropdown.Menu>
@@ -216,17 +191,17 @@ const Dashboard = () => {
                     id="dropdown-basic"
                   >
                     {type === undefined && "All"}
-                    {type === 1 && "Business"}
-                    {type === 0 && "Indiviual"}
+                    {type === "Business" && "Business"}
+                    {type === "Indiviual" && "Indiviual"}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item onClick={() => setType(undefined)}>
                       All
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => setType(1)}>
+                    <Dropdown.Item onClick={() => setType("Business")}>
                       Business
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => setType(0)}>
+                    <Dropdown.Item onClick={() => setType("Indiviual")}>
                       Indiviual
                     </Dropdown.Item>
                   </Dropdown.Menu>
@@ -265,26 +240,26 @@ const Dashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {customers?.map((data: any, index: any) => (
+                    {Customers_List?.map((data: any, index: any) => (
                       <tr key={index}>
                         <td>
                           <input type={"checkbox"}></input>
                         </td>
-                        <td aria-label="ID">{index + 1}</td>
+                        <td aria-label="ID">{index}</td>
                         <td aria-label="First Name">{data?.firstName}</td>
                         <td aria-label="Last Name">{data?.lastName}</td>
                         <td aria-label="Email">{data?.email}</td>
                         <td aria-label="Gender">{data?.gender}</td>
                         <td aria-label="Status">
-                          {data?.status === "suspended" && (
+                          {data?.status === "Suspended" && (
                             <button className="status-suspended">
                               Suspended
                             </button>
                           )}
-                          {data?.status === "pending" && (
+                          {data?.status === "Pending" && (
                             <button className="status-pending">Pending</button>
                           )}
-                          {data?.status === "active" && (
+                          {data?.status === "Active" && (
                             <button className="status-active">Active</button>
                           )}
                         </td>
@@ -362,8 +337,6 @@ const Dashboard = () => {
         <CustomerModal
           show={isShow} //to show new customer modal
           onHide={() => setIsShow(false)} //for close button on modal
-          setIsAdded={() => setIsAdded(true)}
-          isAdded={isAdded}
           customerforupdate={customerForUpdate}
           handlecustomer={handleCustomer}
         />
@@ -375,8 +348,6 @@ const Dashboard = () => {
           deleteid={deleteId} //customer ID that is to be deleted
           onHide={() => setShowDelete(false)} //for close button
           handleSubmit={handleDeleteSubmit}
-          isDeleted={isDeleted}
-          setIsDeleted={() => setIsDeleted((current) => !current)}
         />
       )}
     </>

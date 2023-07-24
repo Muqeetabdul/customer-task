@@ -5,29 +5,19 @@ import {
   updateCustomer,
   deleteCustomer,
   findCustomers,
-  getAllCustomers,
 } from "./customersAPI";
 import { toast } from "react-hot-toast";
 const { actions } = customerSlice;
 
-export const allCustomers = () => (dispatch: AppDispatch) => {
-  getAllCustomers()
-    .then((response) => {
-      console.log(response);
-      dispatch(actions.allCustomers(response.data));
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-};
-
 export const customerAdd = (data: any) => (dispatch: AppDispatch) => {
-  createCustomer(data)
+  return createCustomer(data)
     .then((response) => {
       console.log(response);
-      dispatch(actions.customerAdd(response.data));
-      dispatch(allCustomers());
-      toast.success("Customer Added Successfuly");
+      if (response?.data) {
+        console.log(response?.data, "============");
+        dispatch(getCustomers());
+        toast.success("Customer Added Successfuly");
+      }
     })
     .catch((error) => {
       console.log(error);
@@ -38,7 +28,7 @@ export const customerAdd = (data: any) => (dispatch: AppDispatch) => {
 export const customerUpdate = (data: any) => (dispatch: AppDispatch) => {
   updateCustomer(data)
     .then((response) => {
-      dispatch(actions.customerUpdate(response.data));
+      dispatch(getCustomers());
       toast.success(
         `Customer "${data.firstName + " " + data.lastName}" Updated Successfuly`
       );
@@ -52,7 +42,7 @@ export const customerUpdate = (data: any) => (dispatch: AppDispatch) => {
 export const customerDelete = (id: any) => (dispatch: AppDispatch) => {
   deleteCustomer(id)
     .then((response) => {
-      dispatch(actions.customerDelete(response.data));
+      dispatch(getCustomers());
       toast.error("Customer Deleted");
     })
     .catch((error) => {
@@ -61,11 +51,10 @@ export const customerDelete = (id: any) => (dispatch: AppDispatch) => {
     });
 };
 
-export const customerFind = (queryParams: any) => (dispatch: AppDispatch) => {
-  //Filter customers
-  findCustomers(queryParams)
+export const getCustomers = (queryParams?: any) => (dispatch: AppDispatch) => {
+  findCustomers(queryParams?.pageNumber, queryParams?.pageSize)
     .then((response) => {
-      dispatch(actions.customerFind(response.data.entities));
+      dispatch(actions.setCustomers(response.data.results));
     })
     .catch((error) => {
       console.log(error);

@@ -18,9 +18,16 @@ export function getCustomerById(customerId: number) {
 
 // Method from server should return QueryResultsModel(items: any[], totalsCount: number)
 // items => filtered/sorted result
-export function findCustomers(queryParams: CustomerFilter) {
-  console.log("get customers");
-  return axios.post(`${CUSTOMERS_URL}/`, { queryParams });
+// export function findCustomers(queryParams: CustomerFilter) {
+//   console.log("find customers api end point .............");
+//   return axios.post(`${CUSTOMERS_URL}/`, { queryParams });
+// }
+export function findCustomers(pageNumber?: number, pageSize?: number) {
+  if (pageNumber && pageSize) {
+    return axios.get(`${CUSTOMERS_URL}?limit=${pageSize}&page=${pageNumber}`);
+  } else {
+    return axios.get(`${CUSTOMERS_URL}`);
+  }
 }
 
 // UPDATE => PUT: update the customer on the server
