@@ -14,15 +14,17 @@ const createCustomer = catchAsync(
 
 const getAllCustomers = catchAsync(
   async (req: Request, res: Response): Promise<void> => {
-    const filter = pick(req.query, []);
-    const options = pick(req.query, [
-      "type",
-      "status",
-      "search",
-      "limit",
-      "page",
-    ]);
+    const filter = pick(req.query, ["type", "status"]);
+    const options = pick(req.query, ["limit", "page"]);
     const result = await customerService.queryCustomers(filter, options);
+    res.status(httpStatus.OK).send(result);
+  }
+);
+
+const searchCustomers = catchAsync(
+  async (req: Request, res: Response): Promise<void> => {
+    const searchString = req.query.search as string
+    const result = await customerService.searchCustomers(searchString);
     res.status(httpStatus.OK).send(result);
   }
 );
@@ -59,4 +61,5 @@ export {
   getCustomerById,
   updateCustomerById,
   deleteCustomer,
+  searchCustomers,
 };

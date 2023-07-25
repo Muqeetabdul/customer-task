@@ -29,6 +29,17 @@ export const queryCustomers = async (
   return customers;
 };
 
+export const searchCustomers = async (
+  search: string
+): Promise<CustomerDocument[]> => {
+  const searched_Customers = await Customer.find({
+    firstName: { $regex: ".*" + search + ".*", $options: "i" },
+  });
+  if (searched_Customers) {
+    return searched_Customers;
+  }
+}
+
 // Get customer by ID
 export const getCustomerById = async (
   id: ObjectId

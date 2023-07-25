@@ -17,6 +17,10 @@ router
   );
 
 router
+    .route("/search")
+    .get(validate(customerValidation.searchCustomers), customerController.searchCustomers)
+
+router
   .route("/:customerId")
   .get(
     validate(customerValidation.getCustomer),
@@ -108,10 +112,20 @@ export default router;
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
- *         name: firstName
+ *         name: search
  *         schema:
  *           type: string
- *         description: Customer name
+ *         description: Search Customers
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *         description: Customer type
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *         description: Customer status
  *       - in: query
  *         name: sortBy
  *         schema:

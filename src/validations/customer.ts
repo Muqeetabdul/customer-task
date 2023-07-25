@@ -17,10 +17,9 @@ const createCustomer = {
 
 const getAllCustomers = {
   query: Joi.object().keys({
-    search: Joi.string().optional(),
     type: Joi.string().optional(),
     status: Joi.string().optional(),
-    limit: Joi.number().integer().default(10),
+    limit: Joi.number().integer().default(3),
     page: Joi.number().integer().default(1),
   }),
 };
@@ -57,10 +56,17 @@ const deleteCustomer = {
   }),
 };
 
+const searchCustomers = {
+  query: Joi.object().keys({
+    search: Joi.string()
+  }),
+}
+
 export {
   createCustomer,
   getAllCustomers,
   getCustomer,
   updateCustomer,
   deleteCustomer,
+  searchCustomers,
 };
