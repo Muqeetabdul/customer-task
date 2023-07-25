@@ -34,7 +34,7 @@ export const authSlice = createSlice({
       state.isLoggedIn = true;
       state.user = {
         id: action.payload.user.id,
-        username: action.payload.user.username,
+        name: action.payload.user.name,
         email: action.payload.user.email,
         password: undefined,
       };

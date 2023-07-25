@@ -11,7 +11,7 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (window.localStorage.getItem("TOKEN") === "USER_LOGGED_IN") {
+    if (window.localStorage.getItem("TOKEN")) {
       // @ts-ignore
       dispatch(authActions.Who_Am_i());
     }

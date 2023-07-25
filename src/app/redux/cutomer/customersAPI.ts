@@ -22,17 +22,40 @@ export function getCustomerById(customerId: number) {
 //   console.log("find customers api end point .............");
 //   return axios.post(`${CUSTOMERS_URL}/`, { queryParams });
 // }
-export function findCustomers(pageNumber?: number, pageSize?: number) {
-  if (pageNumber && pageSize) {
+export function findCustomers(
+  pageNumber?: number,
+  pageSize?: number,
+  type?: string,
+  status?: string,
+  search?: string
+) {
+  if (
+    pageNumber &&
+    pageSize &&
+    status === undefined &&
+    type === undefined &&
+    search === undefined
+  ) {
     return axios.get(`${CUSTOMERS_URL}?limit=${pageSize}&page=${pageNumber}`);
-  } else {
-    return axios.get(`${CUSTOMERS_URL}`);
+  } else if (pageNumber && pageSize && status) {
+    return axios.get(
+      `${CUSTOMERS_URL}?limit=${pageSize}&page=${pageNumber}&status=${status}`
+    );
+  } else if (pageNumber && pageSize && type) {
+    return axios.get(
+      `${CUSTOMERS_URL}?limit=${pageSize}&page=${pageNumber}&type=${type}`
+    );
+  } else if (search) {
+    return axios.get(
+      `${CUSTOMERS_URL}/search?search=${search}`
+    );
+  } else { 
+    return axios.get(`${CUSTOMERS_URL}/`);
   }
 }
 
 // UPDATE => PUT: update the customer on the server
 export function updateCustomer(customer: Customer) {
-  console.log(customer, "customer --------------------");
   return axios.patch(`${CUSTOMERS_URL}/${customer.id}`, customer);
 }
 

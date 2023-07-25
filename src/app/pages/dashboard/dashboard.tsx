@@ -13,28 +13,26 @@ import SelectInput from "../../components/form/Select";
 import "./dashboard.scss";
 
 const Dashboard = () => {
+  
   const dispatch: AppDispatch = useDispatch();
   const { user } = useSelector((state: any) => state.auth);
   const { customers } = useSelector((state: any) => state.customer);
+  const { totalPages } = useSelector((state: any) => state.customer);
+  const { totalResults } = useSelector((state: any) => state.customer);
 
-  console.log(customers, "CUSTOMERS ARRAY ................");
-
-  const total_Rows = customers.length;
   const [selectedRows, setSelectedRows] = useState(3);
   const [page, setPage] = useState(1);
   const [recordsPerPage, setrecordsPerPage] = useState(3);
   const firstIndex = (page - 1) * recordsPerPage;
   const lastIndex = page * recordsPerPage;
-  const total_No_Of_Pages = Math.ceil(customers.length / recordsPerPage);
-
   const Customers_List = customers?.slice(firstIndex, lastIndex);
 
   const [search, setSearch] = useState<string | undefined>("");
   const [type, setType] = useState<string | undefined>();
   const [status, setStatus] = useState<string | undefined>();
 
-  const [isShow, setIsShow] = useState(false);
-  const [showDelete, setShowDelete] = useState<boolean>(false);
+  const [show_Customer_Modal, setShow_Customer_Modal] = useState(false);
+  const [show_Delete_Modal, setShow_Delete_Modal] = useState<boolean>(false);
   const [deleteId, setDeleteId] = useState<number | undefined>(0);
 
   const [customerForUpdate, setCustomerForUpdate] = useState<any>();
@@ -64,13 +62,14 @@ const Dashboard = () => {
     // Update Customer
     if (data.id) {
       dispatch(customerActions.customerUpdate(data));
-      setIsShow(false);
+      setShow_Customer_Modal(false);
     } else {
       //adding new customer
       dispatch(customerActions.customerAdd(data));
-      setIsShow(false);
+      setShow_Customer_Modal(false);
     }
   };
+
   const logout = () => {
     dispatch(authActions.logout());
   };
@@ -78,7 +77,7 @@ const Dashboard = () => {
   // ** Customer Modal => call
   const newCustomer = (id: any) => {
     if (id === undefined) {
-      setIsShow((current) => !current);
+      setShow_Customer_Modal((current) => !current);
       setCustomerForUpdate(undefined);
     } else {
       let customerForEdit: any = Customers_List?.find(
@@ -86,14 +85,14 @@ const Dashboard = () => {
       );
       if (customerForEdit) {
         setCustomerForUpdate({ ...customerForEdit });
-        setIsShow(true);
+        setShow_Customer_Modal(true);
       }
     }
   };
 
   // ** Delete Modal => Open & set ID
   const handleDelete = (id: any) => {
-    setShowDelete((current) => !current);
+    setShow_Delete_Modal((current) => !current);
     setDeleteId(id);
   };
 
@@ -101,7 +100,7 @@ const Dashboard = () => {
   const handleDeleteSubmit = () => {
     if (deleteId) {
       dispatch(customerActions.customerDelete(deleteId));
-      setShowDelete(false);
+      setShow_Delete_Modal(false);
       setDeleteId(undefined);
     }
   };
@@ -112,12 +111,15 @@ const Dashboard = () => {
       type: type,
       status: status,
       search: search,
-      pageSize: selectedRows,
       pageNumber: page,
+      pageSize: selectedRows,
     };
-
     dispatch(customerActions.getCustomers(queryParams));
-  }, [type, status, search, selectedRows]);
+  }, [type, status, search, selectedRows, page]);
+
+  const getRowNumber = (indexOnPage: number) => {
+    return (page - 1) * recordsPerPage + indexOnPage + 1;
+  };
 
   return (
     <>
@@ -137,7 +139,7 @@ const Dashboard = () => {
           <div className="customer-topbar">
             <div className="customer-topbar-content">
               <p>
-                <span>Hi,</span> {user?.username}
+                <span>Hi,</span> {user?.name}
               </p>
               <button onClick={() => logout()}>S</button>
             </div>
@@ -159,21 +161,21 @@ const Dashboard = () => {
                     id="dropdown-basic"
                   >
                     {status === undefined && "All"}
-                    {status === "suspended" && "Suspended"}
-                    {status === "pending" && "Pending"}
-                    {status === "active" && "Active"}
+                    {status === "Suspended" && "Suspended"}
+                    {status === "Pending" && "Pending"}
+                    {status === "Active" && "Active"}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item onClick={() => setStatus(undefined)}>
                       All
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => setStatus("suspended")}>
+                    <Dropdown.Item onClick={() => setStatus("Suspended")}>
                       Suspended
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => setStatus("pending")}>
+                    <Dropdown.Item onClick={() => setStatus("Pending")}>
                       Pending
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => setStatus("active")}>
+                    <Dropdown.Item onClick={() => setStatus("Active")}>
                       Active
                     </Dropdown.Item>
                   </Dropdown.Menu>
@@ -245,7 +247,7 @@ const Dashboard = () => {
                         <td>
                           <input type={"checkbox"}></input>
                         </td>
-                        <td aria-label="ID">{index}</td>
+                        <td aria-label="ID">{getRowNumber(index)}</td>
                         <td aria-label="First Name">{data?.firstName}</td>
                         <td aria-label="Last Name">{data?.lastName}</td>
                         <td aria-label="Email">{data?.email}</td>
@@ -302,7 +304,7 @@ const Dashboard = () => {
               <div className="pagination">
                 <PaginationControl
                   page={page}
-                  total={total_No_Of_Pages}
+                  total={totalPages}
                   limit={1}
                   changePage={(newPage: any) => setPage(newPage)}
                   ellipsis={3}
@@ -322,7 +324,7 @@ const Dashboard = () => {
                   defaultValue={3}
                 />
                 <p>
-                  Showing rows {selectedRows} to 5 of {total_Rows}
+                  Showing rows {selectedRows} to 5 of {totalResults}
                 </p>
               </div>
             </div>
@@ -333,20 +335,20 @@ const Dashboard = () => {
       </div>
       {/* -------- Container END ------- */}
       {/* To Call Modal - To add new customer */}
-      {isShow && (
+      {show_Customer_Modal && (
         <CustomerModal
-          show={isShow} //to show new customer modal
-          onHide={() => setIsShow(false)} //for close button on modal
+          show={show_Customer_Modal} //to show new customer modal
+          onHide={() => setShow_Customer_Modal(false)} //for close button on modal
           customerforupdate={customerForUpdate}
           handlecustomer={handleCustomer}
         />
       )}
       {/* To call Delete Modal */}
-      {showDelete && (
+      {show_Delete_Modal && (
         <DeleteCustomer
-          show={showDelete} //to show delete modal
+          show={show_Delete_Modal} //to show delete modal
           deleteid={deleteId} //customer ID that is to be deleted
-          onHide={() => setShowDelete(false)} //for close button
+          onHide={() => setShow_Delete_Modal(false)} //for close button
           handleSubmit={handleDeleteSubmit}
         />
       )}

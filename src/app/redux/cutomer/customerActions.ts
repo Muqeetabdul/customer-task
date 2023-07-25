@@ -14,7 +14,6 @@ export const customerAdd = (data: any) => (dispatch: AppDispatch) => {
     .then((response) => {
       console.log(response);
       if (response?.data) {
-        console.log(response?.data, "============");
         dispatch(getCustomers());
         toast.success("Customer Added Successfuly");
       }
@@ -52,9 +51,18 @@ export const customerDelete = (id: any) => (dispatch: AppDispatch) => {
 };
 
 export const getCustomers = (queryParams?: any) => (dispatch: AppDispatch) => {
-  findCustomers(queryParams?.pageNumber, queryParams?.pageSize)
+  findCustomers(
+    queryParams?.pageNumber,
+    queryParams?.pageSize,
+    queryParams?.type,
+    queryParams?.status,
+    queryParams?.search
+  )
     .then((response) => {
-      dispatch(actions.setCustomers(response.data.results));
+      dispatch(actions.setCustomers(response.data?.results ? response.data?.results : response.data ));
+      // dispatch(actions.setCustomers(response?.data));
+      dispatch(actions.setTotalPages(response.data.totalPages));
+      dispatch(actions.setTotalResults(response.data.totalResults));
     })
     .catch((error) => {
       console.log(error);

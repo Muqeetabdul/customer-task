@@ -15,20 +15,21 @@ export const logIn =
           user: {
             id: response.data.user.id,
             email: response.data.user.email,
-            username: response.data.user.name,
+            name: response.data.user.name,
             password: undefined,
           },
           token: response.data.tokens.access.token,
         };
         console.log(response);
         dispatch(actions.loggedIn(loginData));
-        toast(`Welcome! ${loginData.user.username}`, {
+        toast(`Welcome! ${loginData.user.name}`, {
           icon: "👏",
         });
       })
       .catch((error) => {
-        dispatch(actions.catchError({ error: error.response.data.error }));
-        toast.error(error.response.data.error);
+        console.log(error, 'ERROR FROM AUTH API')
+        dispatch(actions.catchError({ error: error.response.data.message }));
+        toast.error(error.response.data.message);
       });
   };
 
@@ -37,12 +38,11 @@ export const Who_Am_i = () => (dispatch: AppDispatch) => {
   return serverRequest
     .who_am_i()
     .then((response) => {
-      console.log(response, "response -=-=-=-=-=--=--=-=--=-=-");
       const user: User = {
         id: response.data.id,
         email: response.data.email,
         password: undefined,
-        username: response.data.username,
+        name: response.data.name,
       };
       dispatch(actions.whoAmI(user));
     })
