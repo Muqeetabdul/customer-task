@@ -22,6 +22,37 @@ export function getCustomerById(customerId: number) {
 //   console.log("find customers api end point .............");
 //   return axios.post(`${CUSTOMERS_URL}/`, { queryParams });
 // }
+
+// export function findCustomers(
+//   pageNumber?: number,
+//   pageSize?: number,
+//   type?: string,
+//   status?: string,
+//   search?: string
+// ) {
+//   if (pageNumber && pageSize && status === undefined && type === undefined && search === '') {
+//     return axios.get(`${CUSTOMERS_URL}?limit=${pageSize}&page=${pageNumber}`);
+//   } else if (pageNumber && pageSize && status && type === undefined && search === '') {
+//     return axios.get(
+//       `${CUSTOMERS_URL}?limit=${pageSize}&page=${pageNumber}&status=${status}`
+//     );
+//   } else if (pageNumber && pageSize && status === undefined && type && search === '') {
+//     return axios.get(
+//       `${CUSTOMERS_URL}?limit=${pageSize}&page=${pageNumber}&type=${type}`
+//     );
+//   } else if (pageNumber && pageSize && status === undefined && type === undefined && search) {
+//     return axios.get(
+//       `${CUSTOMERS_URL}?limit=${pageSize}&page=${pageNumber}&search=${search}`
+//     );
+//   } else if (pageNumber || pageSize || type || status || search) {
+//     return axios.get(
+//       `${CUSTOMERS_URL}?limit=${pageSize}&page=${pageNumber}&search=${search ? search : ''}&type=${type ? type : undefined}&status=${status ? status : undefined}`
+//     );
+//   } else {
+//     return axios.get(`${CUSTOMERS_URL}/`);
+//   }
+// }
+
 export function findCustomers(
   pageNumber?: number,
   pageSize?: number,
@@ -29,29 +60,18 @@ export function findCustomers(
   status?: string,
   search?: string
 ) {
-  if (
-    pageNumber &&
-    pageSize &&
-    status === undefined &&
-    type === undefined &&
-    search === undefined
-  ) {
-    return axios.get(`${CUSTOMERS_URL}?limit=${pageSize}&page=${pageNumber}`);
-  } else if (pageNumber && pageSize && status) {
-    return axios.get(
-      `${CUSTOMERS_URL}?limit=${pageSize}&page=${pageNumber}&status=${status}`
-    );
-  } else if (pageNumber && pageSize && type) {
-    return axios.get(
-      `${CUSTOMERS_URL}?limit=${pageSize}&page=${pageNumber}&type=${type}`
-    );
-  } else if (search) {
-    return axios.get(
-      `${CUSTOMERS_URL}/search?search=${search}`
-    );
-  } else { 
-    return axios.get(`${CUSTOMERS_URL}/`);
-  }
+  const params = new URLSearchParams();
+
+  if (pageNumber) params.append("page", String(pageNumber));
+  if (pageSize) params.append("limit", String(pageSize));
+  if (status) params.append("status", status);
+  if (type) params.append("type", type);
+  if (search) params.append("search", search);
+
+  const queryString = params.toString();
+  const url = `${CUSTOMERS_URL}${queryString ? `?${queryString}` : ""}`;
+
+  return axios.get(url);
 }
 
 // UPDATE => PUT: update the customer on the server

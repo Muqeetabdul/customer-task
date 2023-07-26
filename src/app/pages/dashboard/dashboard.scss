@@ -51,15 +51,19 @@ $font-family: "arial";
   width: 100%;
   height: 10vh;
   background-color: #ffffff;
+  display: flex;
+  justify-content: flex-end;
 }
 .customer-topbar-content {
-  width: 18%;
+  width: 35%;
   height: 10vh;
-  float: right;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 22px;
   > p {
-    float: left;
-    font-size: 15px;
-    margin-top: 30px;
+    font-size: 16px;
+    margin-top: 15px;
     color: #7f8299;
     margin-right: 10px;
     font-weight: bolder;
@@ -67,16 +71,14 @@ $font-family: "arial";
   }
   p > span {
     color: #c8c8d2;
-    font-size: 15px;
+    font-size: 16px;
     font-family: $font-family;
   }
   > button {
     height: 35px;
     width: 35px;
-    float: left;
     border: none;
     color: #19c5bd;
-    margin-top: 25px;
     border-radius: 6px;
     font-weight: bolder;
     background-color: #c9f7f4;
@@ -129,7 +131,7 @@ $font-family: "arial";
   margin-left: 2%;
   flex-direction: column;
   align-items: flex-start;
-  option{
+  option {
     background-color: #6a6b6b;
     color: white;
   }
@@ -292,17 +294,17 @@ $font-family: "arial";
 //   }
 // }
 @media all and (max-width: 600px) {
-  .sidebar{
+  .sidebar {
     display: none;
   }
-  .customer-section{
+  .customer-section {
     width: 100%;
     height: 155vh;
   }
-  .customer-content{
+  .customer-content {
     height: 135vh;
   }
-  .customer-topbar-content{
+  .customer-topbar-content {
     width: 38%;
   }
   .customer-content-header > button {
@@ -338,7 +340,7 @@ $font-family: "arial";
     margin-left: 2%;
     flex-direction: column;
     align-items: flex-start;
-    > .dropdown .dropdown-style{
+    > .dropdown .dropdown-style {
       width: 270px;
     }
     p {
@@ -393,7 +395,7 @@ $font-family: "arial";
       text-align: right;
       position: relative;
     }
-    table > tbody > tr > td::before{
+    table > tbody > tr > td::before {
       content: attr(aria-label);
       position: absolute;
       left: 0;
@@ -451,9 +453,9 @@ $font-family: "arial";
 //Responsiveness for 'sm' screens
 @media all and (min-width: 600px) {
   .customer-topbar-content {
-    width: 32%;
+    width: 35%;
   }
-  .customer-content{
+  .customer-content {
     height: 78vh;
   }
   .customer-content-header > button {
@@ -504,10 +506,10 @@ $font-family: "arial";
     height: 45px;
     width: 130px;
   }
-  .customer-content-table{
+  .customer-content-table {
     height: 42vh;
   }
-  .customer-content-footer{
+  .customer-content-footer {
     height: 10vh;
   }
   .pagination {
@@ -541,15 +543,12 @@ $font-family: "arial";
     text-align: center;
     vertical-align: middle;
   }
-  .showing-rows{
+  .showing-rows {
     display: none;
   }
 }
 //Responsiveness for 'md' screens
 @media all and (min-width: 768px) {
-  .customer-topbar-content {
-    width: 25%;
-  }
   .sidebar-header p {
     color: #3699fe;
     font-size: 18px;
@@ -564,7 +563,7 @@ $font-family: "arial";
     font-family: "arial";
   }
   .customer-topbar-content {
-    width: 22%;
+    width: 32%;
   }
   .customer-content-header > button {
     height: 40px;
@@ -600,7 +599,7 @@ $font-family: "arial";
     justify-content: flex-start;
     padding-top: 10px;
     padding-left: 8% !important;
-}
+  }
   .justify-content-md-center {
     justify-content: flex-start;
   }
@@ -637,10 +636,10 @@ $font-family: "arial";
     border-radius: 5px;
     margin-right: 5px;
   }
-  .showing-rows{
+  .showing-rows {
     width: 30%;
     display: flex;
-    p{
+    p {
       margin-top: 8%;
     }
     select {
@@ -651,7 +650,7 @@ $font-family: "arial";
 //Responsiveness for 'lg' screens
 @media all and (min-width: 992px) {
   .customer-topbar-content {
-    width: 19%;
+    width: 30%;
   }
   .dropdown-style {
     width: 170px;
@@ -694,7 +693,7 @@ $font-family: "arial";
     padding: 20px 20px;
     font-family: "arial";
   }
-  .showing-rows{
+  .showing-rows {
     width: 40%;
     display: flex;
   }
@@ -702,7 +701,7 @@ $font-family: "arial";
 //Responsiveness for 'xl' screens
 @media all and (min-width: 1200px) {
   .customer-topbar-content {
-    width: 17%;
+    width: 30%;
   }
   .customer-content {
     height: 78vh;
@@ -731,14 +730,14 @@ $font-family: "arial";
   .justify-content-md-center {
     justify-content: flex-start;
   }
-  .showing-rows{
+  .showing-rows {
     width: 40%;
   }
 }
 //Responsiveness for 'xxl' screens
 @media all and (min-width: 1600px) {
   .customer-topbar-content {
-    width: 19% !important;
+    width: 30%;
   }
   .customer-content-header > button {
     margin-right: 25px;

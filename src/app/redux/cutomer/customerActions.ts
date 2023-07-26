@@ -59,8 +59,11 @@ export const getCustomers = (queryParams?: any) => (dispatch: AppDispatch) => {
     queryParams?.search
   )
     .then((response) => {
-      dispatch(actions.setCustomers(response.data?.results ? response.data?.results : response.data ));
-      // dispatch(actions.setCustomers(response?.data));
+      dispatch(
+        actions.setCustomers(
+          response.data?.results ? response.data?.results : response.data
+        )
+      );
       dispatch(actions.setTotalPages(response.data.totalPages));
       dispatch(actions.setTotalResults(response.data.totalResults));
     })

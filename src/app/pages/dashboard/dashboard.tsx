@@ -13,7 +13,6 @@ import SelectInput from "../../components/form/Select";
 import "./dashboard.scss";
 
 const Dashboard = () => {
-  
   const dispatch: AppDispatch = useDispatch();
   const { user } = useSelector((state: any) => state.auth);
   const { customers } = useSelector((state: any) => state.customer);
@@ -23,9 +22,6 @@ const Dashboard = () => {
   const [selectedRows, setSelectedRows] = useState(3);
   const [page, setPage] = useState(1);
   const [recordsPerPage, setrecordsPerPage] = useState(3);
-  const firstIndex = (page - 1) * recordsPerPage;
-  const lastIndex = page * recordsPerPage;
-  const Customers_List = customers?.slice(firstIndex, lastIndex);
 
   const [search, setSearch] = useState<string | undefined>("");
   const [type, setType] = useState<string | undefined>();
@@ -80,9 +76,7 @@ const Dashboard = () => {
       setShow_Customer_Modal((current) => !current);
       setCustomerForUpdate(undefined);
     } else {
-      let customerForEdit: any = Customers_List?.find(
-        (item: any) => item.id === id
-      );
+      let customerForEdit: any = customers?.find((item: any) => item.id === id);
       if (customerForEdit) {
         setCustomerForUpdate({ ...customerForEdit });
         setShow_Customer_Modal(true);
@@ -242,7 +236,7 @@ const Dashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {Customers_List?.map((data: any, index: any) => (
+                    {customers?.map((data: any, index: any) => (
                       <tr key={index}>
                         <td>
                           <input type={"checkbox"}></input>
