@@ -16,9 +16,9 @@ router
     customerController.getAllCustomers
   );
 
-router
-    .route("/search")
-    .get(validate(customerValidation.searchCustomers), customerController.searchCustomers)
+// router
+//     .route("/search")
+//     .get(validate(customerValidation.searchCustomers), customerController.searchCustomers)
 
 router
   .route("/:customerId")
